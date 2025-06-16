@@ -1,4 +1,4 @@
-name: 持续集成
+name: ci
 
 on:
   push:
