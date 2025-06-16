@@ -1,0 +1,1146 @@
+{
+  "hazardLevels": [
+    "高危",
+    "中危", 
+    "低危",
+    "严重"
+  ],
+  "hazardTypes": [
+    "漏洞报告",
+    "入侵痕迹",
+    "页面篡改"
+  ],
+  "unitTypes": [
+    "民营企业",
+    "事业单位",
+    "国有企业",
+    "社会团体",
+    "民办非企业",
+    "人大政协",
+    "党委机关",
+    "政府机关",
+    "其他组织",
+    "个人"
+  ],
+  "industries": [
+    "科技",
+    "政府",
+    "广电",
+    "税务",
+    "能源",
+    "电信",
+    "财政",
+    "宣传",
+    "应急管理",
+    "金融",
+    "交通",
+    "卫健",
+    "教育",
+    "发改",
+    "人社",
+    "环保",
+    "质量监督",
+    "烟草",
+    "邮政",
+    "工商",
+    "民政",
+    "住建",
+    "民委",
+    "公检法",
+    "电子商务",
+    "民航",
+    "文旅",
+    "工信",
+    "统计",
+    "外交",
+    "审计",
+    "农林水",
+    "国土资源",
+    "证券",
+    "气象",
+    "国资",
+    "物流",
+    "地震",
+    "食药监",
+    "知识产权",
+    "航天",
+    "海关",
+    "保险",
+    "海洋",
+    "档案",
+    "商务",
+    "民生企业"
+  ],
+  "vuln_data": [
+    {
+      "vul_name": "SQL注入漏洞",
+      "problem_description": "当Web应用程序未对用户输入的数据进行足够的安全处理（如危险字符过滤或者语句过滤），而直接拼接SQL语句执行时，攻击者可以精心构造参数值，使服务器执行非预期的SQL语句并返回结果，造成数据库信息泄露。利用SQL注入漏洞，攻击者可获取数据库的增、删、改、查权限，甚至执行系统命令，上传后门文件等。",
+      "vul_modify_repair": "1、使用预编译语句，使用 PDO 需要注意不要将变量直接拼接到 PDO 语句中。所有的查询语句都使用数据库提供的参数化查询接口，参数化的语句使用参数而不是将用户输入变量嵌入到 SQL 语句中。当前几乎所有的数据库系统都提供了参数化 SQL 语句执行接口，使用此接口可以非常有效的防止 SQL 注入攻击。\n2、对进入数据库的特殊字符（’”<>&*; 等）进行转义处理，或编码转换。\n3、确认每种数据的类型，比如数字型的数据就必须是数字，数据库中的存储字段必须对应为 int 型。\n4、数据长度应该严格规定，能在一定程度上防止比较长的 SQL 注入语句无法正确执行。\n5、网站每个数据层的编码统一，建议全部使用 UTF-8 编码，上下层编码不一致有可能导致一些过滤模型被绕过。\n6、严格限制网站用户的数据库的操作权限，给此用户提供仅仅能够满足其工作的权限，从而最大限度的减少注入攻击对数据库的危害。\n7、避免网站显示 SQL 错误信息，比如类型错误、字段不匹配等，防止攻击者利用这些错误信息进行一些判断。\n8、过滤危险字符，例如：采用正则表达式匹配 union、sleep、and、select、load_file 等关键字，如果匹配到则终止运行。"
+    },
+    {
+      "vul_name": "XSS跨站脚本漏洞",
+      "problem_description": "Web 程序代码中对用户提交的参数未做过滤或过滤不严，导致参数中的特殊字符破坏了 HTML 页面的原有逻辑，攻击者可以利用该漏洞执行恶意 HTML/JS 代码、构造蠕虫、篡改页面实施钓鱼攻击、以及诱导用户再次登录，然后获取其登录凭证等。",
+      "vul_modify_repair": "1、在cookie中设置了HttpOnly属性，那么通过JavaScript脚本将无法读取到cookie信息，这样能一定程度上防止XSS攻击。\n2、假定所有输入都是可疑的，必须对所有输入中的script、iframe等字样进行严格的检查。这里的输入不仅仅是用户可以直接交互的输入接口，也包括HTTP请求中的cookie中的变量，HTTP请求头部中的变量等。\n3、不仅验证数据的类型，还要验证其格式、长度、范围和内容。\n4、过滤“<” 、“>” 将用户输入放入引号间，基本实现数据与代码隔离；过滤双引号防止用户跨越许可的标记，添加自定义标记；过滤TAB和空格,防止关键字被拆分；过滤script关键字；过滤&#,防止HTML属性绕过检查。在客户端和服务器端同时做数据的验证与过滤。\n5、对输出的数据也要检查，数据库里的值有可能会在一个大网站的多处都有输出，即使在输入做了编码等操作，在各处的输出点时也要进行安全检查。\n"
+    },
+    {
+      "vul_name": "CRLF注入漏洞",
+      "problem_description": "CRLF是”回车 + 换行”（\\r\\n）的简称。在HTTP协议中，HTTP Header与HTTP Body是用两个CRLF分隔的，浏览器就是根据这两个CRLF来取出HTTP 内容并显示出来。所以，一旦我们能够控制HTTP 消息头中的字符，注入一些恶意的换行，这样我们就能注入一些会话Cookie或者HTML代码，所以CRLF Injection又叫HTTP Response Splitting，简称HRS。HRS是比XSS危害更大的安全问题。",
+      "vul_modify_repair": "针对CRLF注入漏洞，建议过滤\\r 、\\n等特殊字符，避免输入的数据污染到其他HTTP头。"
+    },
+    {
+      "vul_name": "LDAP 注入",
+      "problem_description": "由于 Web 应用程序没有对用户发送的数据进行适当过滤和检查，攻击者可修改 LDAP 语句的结构，并且以数据库服务器、Web 服务器等的权限执行任意命令，许可权可能会允许查询、修改或除去 LDAP 树状构造内任何数据。",
+      "vul_modify_repair": "1、严格过滤用户输入的数据，禁止执行非预期系统命令。\n2、客户端提交的变量在放入函数前进行检测。"
+    },
+    {
+      "vul_name": "URL重定向钓鱼",
+      "problem_description": "通过构建URL，攻击者可以使用户重定向到任意URL，利用这个漏洞可以诱使用户访问某个页面，挂马、密码记录、下载任意文件等，常被用来钓鱼。",
+      "vul_modify_repair": "1、referer的限制\n如果确定传递URL参数进入的来源，可以通过该方式实现安全限制，保证该URL的有效性，避免恶意用户自己生成跳转链接。\n2、加入有效性验证Token\n保证所有生成的链接都是来自于可信域的，通过在生成的链接里加入用户不可控的Token对生成的链接进行校验，可以避免用户生成自己的恶意链接从而被利用。\n3、URL白名单，在白名单内才进行跳转\n"
+    },
+    {
+      "vul_name": "Host头攻击漏洞",
+      "problem_description": "对开发人员来说，提取请求头中的Host参数写入当前页面是一个很不明智的选择。因为如果这样，攻击者就可以通过修改HTTP请求头中的Host字段，控制服务器返回页面中的URL。",
+      "vul_modify_repair": "不允许读取Host字段并写入页面。如有需要，应使用服务器脚本自带的SERVER_NAME变量。"
+    },
+    {
+      "vul_name": "框架注入漏洞",
+      "problem_description": "攻击者有可能注入含有恶意内容的 frame 或 iframe 标签。如果用户不够谨慎，就有可能浏览该标签所对应的页面，但意识不到自己会离开原始站点而进入恶意的站点。之后，攻击者便可以诱导用户再次登录，然后获取其登录凭证。",
+      "vul_modify_repair": "建议过滤以下所有字符：| & ； $ % @ ' \" \\' \\\" <> () + CR LF , \\。"
+    },
+    {
+      "vul_name": "CSRF跨站请求伪造漏洞",
+      "problem_description": "攻击者可利用该漏洞模仿合法用户，从而使攻击者能够以该用户身份查看或变更用户记录以及执行事务。",
+      "vul_modify_repair": "1、使用验证码。使用验证码，那么每次操作都需要用户进行互动，可简单有效的防御CSRF攻击。\n2、检测referer。通过检查Referer的值，我们就可以判断这个请求是合法的还是非法的\n3、增加一个随机的token值。添加一个参数Token，其值是随机的。这样攻击者因为不知道Token而无法构造出合法的请求进行攻击。\n"
+    },
+    {
+      "vul_name": "任意文件上传漏洞",
+      "problem_description": "验证上传文件的程序没有对上传文件作任何过滤，导致可以上传任意文件到服务器，甚至是病毒文件和木马文件。",
+      "vul_modify_repair": "1、对上传文件类型进行验证，除在前端验证外在后端依然要做验证，后端可以进行扩展名检测，重命名文件，MIME 类型检测以及限制上传文件的大小等限制来防御，或是将上传的文件其他文件存储服务器中。\n2、严格限制和校验上传的文件，禁止上传恶意代码的文件。同时限制相关上传文件目录的执行权限，防止木马执行。\n3、对上传文件格式进行严格校验，防止上传恶意脚本文件；\n4、严格限制上传的文件路径。\n5、文件扩展名服务端白名单校验。\n6、文件内容服务端校验。\n7、上传文件重命名。\n8、隐藏上传文件路径。"
+    },
+    {
+      "vul_name": "本地文件包含漏洞",
+      "problem_description": "由于程序员未对用户可控的变量进行输入检查，导致用户可以控制被包含的文件，成功利用时可以使web server将特定文件当成脚本执行，从而导致攻击者可获取一定的服务器权限；或直接读取系统文件，造成服务器敏感信息泄露。",
+      "vul_modify_repair": "针对文件包含漏洞，建议采用“白名单”的方式，限制允许包含的文件范围。"
+    },
+    {
+      "vul_name": "远程文件包含漏洞",
+      "problem_description": "服务器通过语言的特性（函数）去包含任意文件时，由于要包含的这个文件来源过滤不严格，从而可以去包含一个恶意文件，攻击者就可以远程构造一个特定的恶意文件达到攻击目的。",
+      "vul_modify_repair": "如果一定要动态包含文件，建议最好明确规定包含哪些文件，进行白名单比对。同时，也可以在包含函数中加入目录限制。"
+    },
+    {
+      "vul_name": "SSRF（服务端请求伪造）",
+      "problem_description": "很多web应用都提供了从其他的服务器上获取数据的功能。使用用户指定的URL，web应用可以获取图片，下载文件，读取文件内容等。这个功能如果被恶意使用，可以利用存在缺陷的web应用作为代理攻击远程和本地的服务器，探测内网信息甚至内网入侵。",
+      "vul_modify_repair": "SSRF形成的原因大都是由于服务端提供了从其他服务器应用获取数据的功能且没有对目标地址做过滤与限制。比如从指定URL地址获取网页文本内容，加载指定地址的图片，下载等等。建议对url参数值做严格的限制。"
+    },
+    {
+      "vul_name": "任意文件读取漏洞",
+      "problem_description": "程序过滤不严，导致可以通过../../../等方式跳转到其他目录读取任意文件。",
+      "vul_modify_repair": "1、过滤”../”的特殊字符\n2、限制读取文件的目录，不允许跨目录读取"
+    },
+    {
+      "vul_name": "任意文件下载漏洞",
+      "problem_description": "在正常下载链接的文件参数前加 ../../../../ 来跳出目录限制，下载系统文件等任意文件。该漏洞是由于后台代码未对下载路径做安全限制引起的。",
+      "vul_modify_repair": "针对任意文件下载漏洞，建议严格限制文件下载路径。"
+    },
+    {
+      "vul_name": "命令执行漏洞",
+      "problem_description": "命令执行漏洞是指应用程序在处理来自用户的输入时，没有对输入的数据进行恰当的验证或清理，从而允许攻击者将命令注入应用程序的系统命令中，导致这些命令被执行。",
+      "vul_modify_repair": "1、严格过滤用户输入的数据，禁止执行非预期系统命令。\n2、客户端提交的变量在放入函数前进行检测。"
+    },
+    {
+      "vul_name": "代码执行漏洞",
+      "problem_description": "攻击者能够执行服务器上的脚本代码，通常是通过使用eval()、assert()、preg_replace()等函数。这种漏洞允许攻击者执行任意的脚本代码，可能导致数据泄露或服务中断‌",
+      "vul_modify_repair": "1、严格过滤用户输入的数据，禁止执行非预期系统命令。\n2、减少或不使用代码或命令执行函数\n3、客户端提交的变量在放入函数前进行检测\n4、减少或不使用危险函数"
+    },
+    {
+      "vul_name": "XXE漏洞",
+      "problem_description": "解析时未对XML外部实体加以限制，导致攻击者将恶意代码注入到XML中，导致服务器加载恶意的外部实体引发文件读取，SSRF，命令执行等危害操作。",
+      "vul_modify_repair": "1、禁用或者过滤XML文档中的外部实体\n2、使用最新的、安全的 XML 解析库和框架"
+    },
+    {
+      "vul_name": "Struts2 dev-mod命令执行漏洞",
+      "problem_description": "网站封装采用Apache Struts xwork作为网站应用框架，且devMode为打开状态。当这个设置开启时，Struts2会提供更多的日志和调试信息来帮助开发者更快速的开发。\n然而在开发者模式下，将允许OGNL语句注入，攻击者可能利用此漏洞进行远程代码执行。",
+      "vul_modify_repair": "1、升级最新版本；\n2、系统如果不再使用 ，请将其下线或用防火墙屏蔽。"
+    },
+    {
+      "vul_name": "S2-005命令执行漏洞",
+      "problem_description": "OGNL除其他功能外，还提供了广泛的表达评估功能。该漏洞允许恶意用户绕过构建在ParametersInterceptor中的“＃” - 使用保护，从而能够利用此漏洞进行远程代码执行。",
+      "vul_modify_repair": "1、升级最新版本；\n2、系统如果不再使用 ，请将其下线或用防火墙屏蔽。"
+    },
+    {
+      "vul_name": "S2-009命令执行漏洞",
+      "problem_description": "OGNL除其他功能外，还提供广泛的表达评估功能。该漏洞允许恶意用户绕过构建到ParametersInterceptor中的所有保护（正则表达式模式，拒绝方法调用），从而能够在任何公开的字符串变量中注入恶意表达式以进一步评估。\nS2-003和S2-005中已经解决了类似的行为，但事实证明，基于白名单可接受的参数名称所产生的修复只是部分地关闭了漏洞。\n正则表达式在ParametersInterceptor中匹配top ['foo']（0）作为一个有效的表达式，OGNL把它视为（top ['foo']）（0）并且将'foo'动作参数的值作为OGNL表达式来计算。这使得恶意用户可以将任意的OGNL语句放入任何由操作暴露的字符串变量中，并将其作为OGNL表达式进行求值，并且由于OGNL语句在HTTP参数值中，攻击者可以使用黑名单字符（例如＃）禁用方法执行并执行任意方法绕过了ParametersInterceptor和OGNL库的保护。",
+      "vul_modify_repair": "1、升级最新版本；\n2、系统如果不再使用 ，请将其下线或用防火墙屏蔽。"
+    },
+    {
+      "vul_name": "S2-016命令执行漏洞",
+      "problem_description": "在struts2中，DefaultActionMapper类支持以\"action:\"、\"redirect:\"、\"redirectAction:\"作为导航或是重定向前缀，但是这些前缀后面同时可以跟OGNL表达式，由于struts2没有对这些前缀做过滤，导致利用OGNL表达式调用java静态方法执行任意系统命令。",
+      "vul_modify_repair": "1、升级最新版本；\n2、系统如果不再使用 ，请将其下线或用防火墙屏蔽。"
+    },
+    {
+      "vul_name": "S2-017URL跳转漏洞",
+      "problem_description": "在2.3.15.1之前的Struts 2中，“redirect：”或“redirectAction：”之后的信息可以很容易地被操纵，以重定向到任意位置。",
+      "vul_modify_repair": "1、升级最新版本；\n2、系统如果不再使用 ，请将其下线或用防火墙屏蔽。"
+    },
+    {
+      "vul_name": "S2-019命令执行漏洞",
+      "problem_description": "Struts2的操作映射机制支持特殊参数前缀操作，这可能会在表格底部附加引导信息，在映射 \"action:\" 前缀操作时存在安全绕过漏洞，可被攻击者利用绕过某些安全限制访问受限制功能。Struts2的Dynamic Method Invocation机制是默认开启的（仅提醒用户如果可能的情况下关闭此机制）这样就存在远程代码执行漏洞，攻击者可利用此漏洞在受影响应用上下文中执行任意代码。",
+      "vul_modify_repair": "1、升级最新版本；\n2、系统如果不再使用 ，请将其下线或用防火墙屏蔽。"
+    },
+    {
+      "vul_name": "S2-032命令执行漏洞",
+      "problem_description": "动态方法调用启用时，可能会传递一个恶意表达式，用于在服务器端执行任意代码。",
+      "vul_modify_repair": "1、升级最新版本；\n2、系统如果不再使用 ，请将其下线或用防火墙屏蔽。"
+    },
+    {
+      "vul_name": "S2-037命令执行漏洞",
+      "problem_description": "Struts2使用Rest插件之后，ActionMapping通过org.apache.struts2.rest.RestActionMapper.java类的publicActionMappinggetMapping(HttpServl etRequest request,ConfigurationManagerconfigManager)的方法获取的。其中，当请求url是如下的格式：actionName/id/methodName会获取methodName 作为ActionMapping的method属性。但method属性未做任何处理，同S2-032漏洞执行流程一致，都是将ActionMapping的属性设置到ActionProxy中，从ActionProxy中获取method属性带入到ognl表达式中执行，通过OGNL表达式静态调用获取ognl.OgnlContext的DEFAULT_MEMBER_ACCESS属性并覆盖_memberAccess的方式进行绕过，进而可在受控制的服务器端执行任意代码。即攻击者在部署了REST插件的Struts 2服务器上均可利用该漏洞远程执行任意命令",
+      "vul_modify_repair": "1、升级最新版本；\n2、系统如果不再使用 ，请将其下线或用防火墙屏蔽。"
+    },
+    {
+      "vul_name": "S2-045命令执行漏洞",
+      "problem_description": "使用 Jakarta 文件上传插件的 Struts，攻击者可在上传文件时通过修改HTTP请求头中的 Content-Type 值来触发该漏洞，进而执行系统命令。",
+      "vul_modify_repair": "1、升级最新版本；\n2、系统如果不再使用 ，请将其下线或用防火墙屏蔽。"
+    },
+    {
+      "vul_name": "S2-046命令执行漏洞",
+      "problem_description": "使用 Jakarta 文件上传插件的 Struts，攻击者可在上传文件的大小（由 Content-Length 头指定）大于 Struts2 允许的最大大小（2GB），文件名内容构造恶意的 OGNL 来触发该漏洞，进而执行系统命令。",
+      "vul_modify_repair": "1、升级最新版本；\n2、系统如果不再使用 ，请将其下线或用防火墙屏蔽。"
+    },
+    {
+      "vul_name": "S2-052命令执行漏洞",
+      "problem_description": "Struts2 REST 插件使用带有 XStream 程序的 XStream Handler 进行未经任何代码过滤的反序列化操作，这可能在反序列化XML payloads时导致远程代码执行。任意攻击者都可以构造恶意的XML内容提升权限。",
+      "vul_modify_repair": "1、升级最新版本；\n2、系统如果不再使用 ，请将其下线或用防火墙屏蔽。"
+    },
+    {
+      "vul_name": "S2-053命令执行漏洞",
+      "problem_description": "Apache Struts2 Freemarker标签如果被错误的配置使用，将会导致RCE远程代码执行漏洞。",
+      "vul_modify_repair": "1、升级到Apache Struts版本2.5.12或2.3.34\n2、使用只读属性来初始化value属性（仅限getter属性）\n3、Freemarker标签内容不要通过Request方式获取 "
+    },
+    {
+      "vul_name": "JDWP远程命令执行漏洞",
+      "problem_description": "JDWP 是 Java Debug Wire Protocol 的缩写，它定义了调试器（debugger）和被调试的 Java 虚拟机（target vm）之间的通信协议。当对外开启该协议的Java调试模式时，存在远程命令执行漏洞。允许攻击者远程执行代码，获得服务器权限。",
+      "vul_modify_repair": "1、升级最新版本；\n2、系统如果不再使用 ，请将其下线或用防火墙屏蔽。"
+    },
+    {
+      "vul_name": "ElasticSearch命令执行漏洞",
+      "problem_description": "该漏洞存在于一个名为ElasticSearch.yml的文件，在这个文件中存在一个配置项“script.disable_dynamic”，默认为“false”。此默认配置允许服务器动态执行用户发送的任意代码。黑客只需要通过一个URL地址向服务器传送一段代码，就可以创建和执行他们自己的程序。一旦黑客获得通过，他们在服务器上的操作将不受任何限制，包括窃取网站中的用户账号及密码等敏感信息，或者留下一个后门程序。",
+      "vul_modify_repair": "1、升级最新版本；\n2、系统如果不再使用 ，请将其下线或用防火墙屏蔽。"
+    },
+    {
+      "vul_name": "Resin任意文件读取漏洞",
+      "problem_description": "安装某些版本Resin服务器的网站存在可读取任意文件的漏洞，攻击者利用该漏洞可以读取网站服务器的任意文件内容。",
+      "vul_modify_repair": "1、升级最新版本；\n2、系统如果不再使用 ，请将其下线或用防火墙屏蔽。"
+    },
+    {
+      "vul_name": "GNU Bash远程命令执行",
+      "problem_description": "GNU Bash 4.3及之前版本在评估某些构造的环境变量时存在安全漏洞，向环境变量值内的函数定义后添加多余的字符串会触发此漏洞，攻击者可利用此漏洞改变或绕过环境限制，以执行shell命令。",
+      "vul_modify_repair": "1、升级最新版本；\n2、系统如果不再使用 ，请将其下线或用防火墙屏蔽。"
+    },
+    {
+      "vul_name": "Unicode 转换漏洞",
+      "problem_description": "在Unicode在转换时，由于超长字节序列和错误格式引起子序列的安全问题。通过特殊的编码格式绕过程序对恶意字符的检测，可以用在SQL注入、XSS等。",
+      "vul_modify_repair": "1、升级Unicode版本至官方最新稳定版本http://www.unicode.org\n2、Unicode转化UTF-8编码后，对转换后进行安全检测，对特殊字符过滤或进行安全编码后输出。"
+    },
+    {
+      "vul_name": "检测到网站被黑痕迹 ",
+      "problem_description": "网站页面已被篡改或已有入侵痕迹。",
+      "vul_modify_repair": "清除网站木马，全面检测网站漏洞并及时修复。"
+    },
+    {
+      "vul_name": "使用被弃用的SSL 2.0协议",
+      "problem_description": "网站https使用了SSL 2.0协议。该协议非常老旧且已被弃用。该协议存在大量已知的安全漏洞，比如DROWN漏洞等。",
+      "vul_modify_repair": "禁用SSL 2.0或者使用SSL 3.0 或TLS 1.0代替。"
+    },
+    {
+      "vul_name": "OpenSSL远程内存泄露漏洞（心脏滴血漏洞）",
+      "problem_description": "OpenSSL是一款开放源码的SSL实现，用来实现网络通信的高强度加密。漏洞与OpenSSL TLS/DTLS传输层安全协议heartbeat扩展组件(RFC6520)相关，因此漏洞又被称为“heartbleed bug”（中文名称：“心血”漏洞）。该漏洞无需任何特权信息或身份验证，就可以获得X.509证书的私钥、用户名与密码、cookies等信息，进一步可直接从服务提供商和用户通讯中窃取聊天工具消息、电子邮件以及重要的商业文档和通信等私密数据。",
+      "vul_modify_repair": "升级OpenSSL版本到最新的1.0.1g；使用-DOPENSSL_NO_HEARTBEATS参数重新编译低版本的OpenSSL以禁用Heartbleed模块。"
+    },
+    {
+      "vul_name": "JBoss Seam参数化EL表达式远程代码执行漏洞",
+      "problem_description": "JBoss Seam是一个Java EE5框架，把JSF与EJB3.0组件合并在一起，从而为开发基于Web的企业应用程序提供一个最新的模式。\nJBoss Seam处理某些参数化JBoss EL表达式的方式存在输入过滤漏洞（ CVE-2010-1871）。如果远程攻击者能够诱骗通过认证的JBoss Seam用户访问特制的网页，就可能导致执行任意代码",
+      "vul_modify_repair": "升级至4.3.0 EL4或以上更高的、确认已修复此漏洞的版本。参考链接：https://bugzilla.redhat.com/show_bug.cgi?id=615956"
+    },
+    {
+      "vul_name": "Jenkins CLI接口任意文件读取漏洞",
+      "problem_description": "在Jenkins 2.441 及之前的版本中，使用args4j来解析命令行输入，并支持通过HTTP、Websocket等协议远程确定命令行参数。args4j中用户可以通过`@`字符来加载任何文件，这导致攻击者通过该特性来读取服务器上的任何文件。漏洞编号为：CVE-2024-23897。",
+      "vul_modify_repair": "1、升级至安全版本。"
+    },
+    {
+      "vul_name": "PHP 反序列化",
+      "problem_description": "因为程序未对用户输入的序列化字符串进行检测，导致攻击者可以控制反序列化过程，从而导致代码执行、文件操作、执行数据库操作等不可控后果。",
+      "vul_modify_repair": "1、对传入的对象进行严格的过滤检查\n2、在反序列化过程执行的文件读写、命令或代码执行函数中是否有用户可控的参数。"
+    },
+    {
+      "vul_name": "Weblogic Java反序列化远程命令执行漏洞",
+      "problem_description": "Weblogic存在Java反序列化漏洞，攻击者可以远程执行系统命令，获得服务器权限。",
+      "vul_modify_repair": "及时升级官方补丁。"
+    },
+    {
+      "vul_name": "Apache Tomcat AJP协议文件读取漏洞",
+      "problem_description": "Tomcat AJP漏洞，也被称为幽灵猫漏洞（Ghostcat），是一个严重的安全漏洞，编号为CVE-2020-1938。这个漏洞存在于Apache Tomcat的AJP协议中，允许攻击者通过构造恶意的AJP请求来读取或包含Tomcat服务器上所有webapp目录下的任意文件，例如webapp配置文件、源代码等。这可能导致信息泄露或远程代码执行。",
+      "vul_modify_repair": "1、tomcat更新到安全版本\n2、关闭AJP服务"
+    },
+    {
+      "vul_name": "JBoss反序列化漏洞",
+      "problem_description": "根源在CommonsCollections组件中对于集合的操作存在可以进行反射调用的方法,并且该方法在相关对象反序列化时并未进行任何校验，导致远程代码执行。利用漏洞，允许攻击者远程执行系统命令，获得服务器权限，导致服务器运行安全风险。",
+      "vul_modify_repair": "1、针对JBoss Java反序列化漏洞，建议更新jboss版本到最新版（http://www.jboss.org/）或 更新官方补丁。\n2、针对数据库帐号密码进行修改，要求密码长度8位数以上，密码复杂程度必须包含数字、大小写字母及特殊字符。\n3、对服务器进行全面安全检查，及时排查、清除webshell等后门文件；及时修改数据库密码等。"
+    },
+    {
+      "vul_name": "shiro反序列化漏洞",
+      "problem_description": "Apache Shiro默认使用了CookieRememberMeManager，其处理cookie的流程是：得到rememberMe的cookie值 >  Base64解码–>AES解密–>反序列化。然而AES的密钥是硬编码的，就导致了攻击者可以构造恶意数据造成反序列化的RCE漏洞。",
+      "vul_modify_repair": "1、更换shiro组件中的AES密钥，不要使用网上已公开的密钥，使用shiro官方提供的方法随机生成自己的密钥，并妥善保管好该密钥；\n2、对外提供服务的和能够被远程访问的进程，如Web服务，不应使用“root”或属于root用户组中的用户；\n3、及时更新补丁或升级系统，使用最新最稳定的安全版本。"
+    },
+    {
+      "vul_name": "JBoss JMXInvokerServlet远程命令执行漏洞",
+      "problem_description": "Jboss在默认安装的时候，会安装http-invoker.sar站点，当请求invoker/JMXInvokerServlet或invoker/EJBInvokerServlet会调用org.jboss.invocation.http.servlet.InvokerServlet.class处理请求。该类对GET请求和POST请求，统一调用processRequest函数处理，因此，攻击者需要自己构造一个jboss的类，并且将其序列化，然后将序列化的数据直接提交到存在漏洞站点的invoker/JMXInvokerServlet页面，恶意代码将会被执行。",
+      "vul_modify_repair": "建议删除或禁止访问/invoker/JMXInvokerServlet文件。"
+    },
+    {
+      "vul_name": "Apache ActiveMQ远程代码执行漏洞 (CVE-2016-3088)",
+      "problem_description": "Apache ActiveMQ Fileserver 存在多个安全漏洞，可使远程攻击者用恶意代码替代Web应用，在受影响系统上执行远程代码（CVE-2016-3088）。",
+      "vul_modify_repair": "1、ActiveMQ Fileserver 的功能在 5.14.0 及其以后的版本中已被移除。建议用户升级至 5.14.0 及其以后版本。\n2、通过移除 conf\\jetty.xml 的以下配置来禁用 ActiveMQ Fileserver 功能"
+    },
+    {
+      "vul_name": "列目录",
+      "problem_description": "由于 web 服务器配置不当，开启了目录浏览，攻击者可获得服务器上的文件目录结构，获取敏感文件。",
+      "vul_modify_repair": "1、通过修改配置文件，禁止中间件（如 IIS、apache、tomcat）的文件目录索引功能\n2、设置目录访问权限"
+    },
+    {
+      "vul_name": "Apache Tomcat示例目录漏洞",
+      "problem_description": "tomcat安装时默认的演示、文档页面，会造成信息泄露和XSS跨站脚本漏洞，攻击者可以创建、销毁或控制session。",
+      "vul_modify_repair": "1、删除样例文件\n2、限制文件访问权限"
+    },
+    {
+      "vul_name": "Crossdomain.xml 配置不当",
+      "problem_description": "网站根目录下的 crossdomain.xml 文件指明了远程 Flash 是否可以加载当前网站的资源（图片、网页内容、Flash 等）。如果配置不当，可能导致遭受跨站请求伪造（CSRF）攻击。",
+      "vul_modify_repair": "对于不需要从外部加载资源的网站，在 crossdomain.xml 文件中更改 allow-access-from 的 domain 属性为域名白名单。"
+    },
+    {
+      "vul_name": "Tomcat版本过低漏洞",
+      "problem_description": "Tomcat由于版本过低存在安全漏洞。",
+      "vul_modify_repair": "升级Tomcat版本或及时打补丁。"
+    },
+    {
+      "vul_name": "HPPT.sys远程代码执行漏洞（MS15-034）",
+      "problem_description": "HTTP 协议堆栈 （HTTP.sys） 中存在一个远程代码执行漏洞，该漏洞是在 HTTP.sys 不正确地解析特制的 HTTP 请求时导致的。成功利用此漏洞的攻击者可以在 System 帐户的上下文中执行任意代码。",
+      "vul_modify_repair": "1、安装修复补丁\n2、打开防火墙或杀软\n3、禁用IIS内核缓存"
+    },
+    {
+      "vul_name": "永恒之蓝(MS17-010)",
+      "problem_description": "永恒之蓝是指2017年4月14日晚，黑客团体Shadow Brokers（影子经纪人）公布一大批网络攻击工具，其中包含“永恒之蓝”工具，“永恒之蓝”利用Windows系统的SMB漏洞可以获取系统最高权限。5月12日，不法分子通过改造“永恒之蓝”制作了wannacry勒索病毒。恶意代码会扫描开放445文件共享端口的Windows机器，无需用户任何操作，只要开机上网，不法分子就能在电脑和服务器中植入勒索软件、远程控制木马、虚拟货币挖矿机等恶意程序。",
+      "vul_modify_repair": "1、关闭445端口\n2、安装修复补丁\n3、打开防火墙或杀软"
+    },
+    {
+      "vul_name": "WebDav文件上传/信息泄露漏洞",
+      "problem_description": "WebDAV是一种基于 HTTP 1.1协议的通信协议.它扩展了HTTP 1.1，在GET、POST、HEAD等几个HTTP标准方法以外添加了一些新的方法。使应用程序可直接对Web Server文件进行读写，并支持写文件锁定(Locking)及解锁(Unlock)，还可以支持文件的版本控制。远程攻击者可能利用此漏洞非授权读写文件。",
+      "vul_modify_repair": "通常情况下网站不需要支持额外的方法，建议禁用WebDav服务，关闭PUT、MOVE、COPY等方法。"
+    },
+    {
+      "vul_name": "http slow 拒绝服务攻击",
+      "problem_description": "如果远程攻击者使用发包工具向Apache服务器发送了不完整的HTTP请 求，服务器会打开连接等待接受完整的头，但如果发包工具不再继续发送完整请求而是发送无效头的话，就会一直保持打开的连接。这种攻击所造成的影响很严重， 因为攻击者不需要发送很大的通讯就可以耗尽服务器上的可用连接。也就是说，即使低带宽的用户也可以攻击大流量的服务器。",
+      "vul_modify_repair": "1、升级到最新版的apache\n2、在httpd.conf中添加RequestReadTimeout header=20-40,MinRate=500 body=20,MinRate=500\n3、直接在 iptables 中限制每个 IP 的连接数可以解决以上绝大部分问题，除非攻击者拥有众多肉鸡，否则单 IP 的攻击将失去效果。\niptables -A INPUT -p tcp --syn --dport 8889 -m connlimit --connlimit-above 20 -j REJECT --reject-with tcp-reset\n"
+    },
+    {
+      "vul_name": "传输层保护不足漏洞",
+      "problem_description": "传输层保护不足，会暴露传输的数据，导致数据被窃听，账号被盗等，如果是管理员的账号面临这个问题，那么将会导致整个网站处于数据暴露的状态，将对网站和用户造成严重的甚至无法挽回的损失。",
+      "vul_modify_repair": "1、对所有敏感的页面使用SSL，非SSL请求的页面应该被重定向到SSL请求的页面。\n2、对所有敏感的Cookie，设置“secure”的flag。\n3、保证SSL的提供商只支持强大的算法，这样就不能够被轻易破解。（使用标准的强算法）\n4、确保您的证书是有效的，不过期，不被撤销，并匹配这个网站使用的所有域。\n5、后台和其他的连接也应该使用SSL或其他加密技术。\n6、即使是开发者的注释也应该很好的被保护，防止信息泄露。\n"
+    },
+    {
+      "vul_name": "服务器启用了TRACE Method方法",
+      "problem_description": "1. 恶意攻击者可以通过TRACE Method返回的信息了解到网站前端的一些信息，如缓存服务器等，从而为下一步的攻击提供便利。\n2.恶意攻击者可以通过TRACE Method进行XSS攻击\n3.即使网站对关键页面启用了HttpOnly头标记和禁止脚本读取cookie信息，那么通过TRACE Method恶意攻击者还是可以绕过这个限制读取到cookie信息。",
+      "vul_modify_repair": "禁用TRACE方法。"
+    },
+    {
+      "vul_name": "点击劫持漏洞（X-Frame-Options头缺失）",
+      "problem_description": "通过覆盖不可见的框架误导受害者点击，受害者点击的是他所看到的网页，但其实他所点击的是被黑客精心构建的另一个置于原网页上面的透明页面。",
+      "vul_modify_repair": "设置X-Frame-Options值来防御利用iframe嵌套的点击劫持攻击。"
+    },
+    {
+      "vul_name": "启用了不安全的HTTP方法",
+      "problem_description": "开启了不安全的HTTP方法：DELTE/SEARCE/COPY，MOVE/PROPFIND/PROPPATCH/MKCOL/LOCK/UNLOCK/PUT，这些方法表示可能在服务器上使用了 WebDAV，由于 dav 方法允许客户端操纵服务器上的文件，如上传、修改、删除相关文件等危险操作，如果没有合理配置 dav，有可能允许未授权的用户对其进行利用，修改服务器上的文件。",
+      "vul_modify_repair": "1、关闭不安全的传输方法，只开启 POST、GET 方法。\n2、如果服务器不使用 WebDAV 可直接禁用，或为允许 webdav 的目录配置严格的访问权限，如认证方法，认证需要的用户名，密码。"
+    },
+    {
+      "vul_name": "域名访问限制不严格",
+      "problem_description": "目标存在域名访问限制不严格漏洞。Http请求的Hostname字段没有严格的域名限制，导致可以绕过一些防护措施。",
+      "vul_modify_repair": "配置WEB服务器，限制只能以域名形式访问服务器。"
+    },
+    {
+      "vul_name": "URL 跳转",
+      "problem_description": "有的 Web 应用程序中使用 URL 参数中的地址作为跳转链接的功能 ，攻击者可实施钓鱼、恶意网站跳转等攻击。",
+      "vul_modify_repair": "1、在进行页面跳转前校验传入的 URL 是否为可信域名。\n2、白名单规定跳转链接"
+    },
+    {
+      "vul_name": "明文传输",
+      "problem_description": "用户登录过程中使用明文传输用户登录信息，若用户遭受中间人攻击时，攻击者可直接获取该用户登录账户，从而进行进一步渗透。",
+      "vul_modify_repair": "1、用户登录信息使用加密传输，如密码在传输前使用安全的算法加密后传输，可采用的算法包括：不可逆 hash 算法加盐（4 位及以上随机数，由服务器端产生）；安全对称加密算法，如 AES (128、192、256 位)，且必须保证客户端密钥安全，不可被破解或读出；非对称加密算法，如 RSA (不低于 1024 位)、SM2 等。\n2、使用 https 来保证传输的安全。"
+    },
+    {
+      "vul_name": ".SVN源代码泄露",
+      "problem_description": "造成SVN源代码漏洞的主要原因是管理员操作不规范。在使用SVN管理本地代码过程中，会自动生成一个名为.svn的隐藏文件夹，其中包含重要的源代码信息。但一些网站管理员在发布代码时，不愿意使用‘导出’功能，而是直接复制代码文件夹到WEB服务器上，这就使.svn隐藏文件夹被暴露于外网环境，黑客可以借助其中包含的用于版本信息追踪的‘entries’文件，逐步摸清站点结构。\n更严重的问题在于，SVN产生的.svn目录下还包含了以.svn-base结尾的源代码文件副本（低版本SVN具体路径为text-base目录，高版本SVN为pristine目录），如果服务器没有对此类后缀做解析，黑客则可以直接获得文件源代码。",
+      "vul_modify_repair": "针对SVN信息泄露漏洞，建议删除WEB目录里的SVN文件或限制访问.svn目录，并升级SVN软件至1.7或以上更高版本"
+    },
+    {
+      "vul_name": ".hg源代码泄露",
+      "problem_description": "Mercurial(hg)是一种分布式版本控制系统，它与Git类似也可以用于管理代码的版本控制，如果Mercurial服务器的安全措施不当或用户不小心，可能会导致Mercurial源码的信息泄露的问题，而Mercurial源码信息泄露的原理是因为Mercurial服务器上的源代码未被正确保护，导致未经授权的用户可以轻易地访问和下载代码",
+      "vul_modify_repair": "1、权限控制：确保 Mercurial 仓库仅对授权用户开放，使用强密码和适当的访问控制策略。\n2、服务器安全：确认 Web 服务器配置正确，避免将 .hg 目录暴露在 web 可见范围内。\n3、敏感信息管理：避免在源代码或配置文件中硬编码敏感信息，使用环境变量或外部配置文件来存储这类信息，并确保它们不被纳入版本控制。\n4、持续监控与审计：定期审查 Mercurial 提交历史，确保没有敏感信息被意外提交。"
+    },
+    {
+      "vul_name": ".idea工程目录信息泄露漏洞",
+      "problem_description": ".idea目录用来放置开发工程的一些配置文件，通常是.xml文件。其中workspace.xml里面存放一些开发者个人配置，比如开发路径、开发环境等。里面包含一些敏感信息。",
+      "vul_modify_repair": "生产环境中删除.idea目录及该目录下的文件，或配置网站服务器禁止访问.idea目录。"
+    },
+    {
+      "vul_name": " .htaccess文件未授权访问",
+      "problem_description": "攻击者可未授权访问.htaccess文件，泄露网站敏感信息。",
+      "vul_modify_repair": "禁止.htaccess文件被查看"
+    },
+    {
+      "vul_name": ".git源代码泄露",
+      "problem_description": "泄露网站敏感信息，攻击者可直接获取源码信息实施进一步攻击。",
+      "vul_modify_repair": "删除.git目录。"
+    },
+    {
+      "vul_name": ".DS_Store敏感信息泄露",
+      "problem_description": ".DS_Store 文件是macOS操作系统中用于存储文件和文件夹的元数据信息的文件，这些文件通常是隐藏的，如果开发人员没有很好的删除.DS_Store，就会导致.DS_Store文件泄露。",
+      "vul_modify_repair": "1.删除不必要的备份文件；\n2.设置访问权限；\n3.将备份文件放至服务器其它目录下。\n4.如需存放该类文件，请将文件名命名为难以猜解的无规则字符串。"
+    },
+    {
+      "vul_name": "硬编码敏感信息泄露",
+      "problem_description": "硬编码（Hardcoding）是指在软件开发过程中，将某些具体值直接写入程序代码中的做法。这些值可以包括配置参数、数据库连接字符串、API 密钥、文件路径、用户凭证等。硬编码通常是为了简化开发过程或快速实现某些功能，但从长远来看，它会带来许多问题。",
+      "vul_modify_repair": "1、将敏感信息和配置参数存储在环境变量中，程序运行时读取这些变量。\n2、将配置信息存储在外部配置文件中，如 .env 文件、JSON 文件、YAML 文件等。\n3、在存储和传输敏感信息时，使用加密技术进行保护，确保即使信息被截获也无法被轻易读取。"
+    },
+    {
+      "vul_name": "ASP.NET_Padding_Oracle信息泄露(MS10-070)",
+      "problem_description": " ASP.NET由于加密填充验证过程中处理错误不当，导致存在一个信息泄漏漏洞。成功利用此漏洞的攻击者可以读取服务器加密的数据，例如视图状态。 此漏洞还可以用于数据篡改，如果成功利用，可用于解密和篡改服务器加密的数据。",
+      "vul_modify_repair": "建议将Microsoft .NET Framework 更新至最新版本。"
+    },
+    {
+      "vul_name": "错误页面信息泄露（应用程序错误信息）",
+      "problem_description": "攻击者可以根据错误或警告消息收集服务器信息。",
+      "vul_modify_repair": "1、关闭web服务器错误提示；\n2、关闭运行平台的错误提示；\n3、建立错误机制，不要把真实的错误反馈给访问者。捕获后台抛出的异常，制定异常固定跳转页面，如500错误，跳转到相应页面，例如“系统异常请与管理员联系”，403异常，找不到页面等等。"
+    },
+    {
+      "vul_name": "备份文件泄露",
+      "problem_description": "在网站的使用过程中，往往需要对网站中的文件进行修改、升级。此时就需要对网站整站或者其中某一页面进行备份。当备份文件或者修改过程中的缓存文件因为各种原因而被留在网站web目录下，而该目录又没有设置访问权限时，便有可能导致备份文件或者编辑器的缓存文件被下载，导致敏感信息泄露，给服务器的安全埋下隐患。",
+      "vul_modify_repair": "1、删除不必要的备份文件；\n2、设置访问权限；\n3、将备份文件放至服务器其它目录下。\n4、如需存放该类文件，请将文件名命名为难以猜解的无规则字符串。"
+    },
+    {
+      "vul_name": "目录遍历",
+      "problem_description": "攻击者通过不指定url中的具体文件，来查看某个目录下的所有文件和目录结构。",
+      "vul_modify_repair": "1、通过修改配置文件，禁止中间件（如 IIS、apache、tomcat）的文件目录索引功能。\n2、设置目录访问权限。"
+    },
+    {
+      "vul_name": "IIS短文件名漏洞",
+      "problem_description": "Microsoft IIS在实现上存在文件枚举漏洞，攻击者可以利用“~”字符猜解或遍历服务器中的文件名，或对IIS服务器中的.Net Framework进行拒绝服务攻击。",
+      "vul_modify_repair": "针对IIS短文件名漏洞，建议禁止url中使用“~”或它的Unicode编码，或关闭windows的8.3格式功能。"
+    },
+    {
+      "vul_name": "源代码泄露漏洞",
+      "problem_description": "部分或全部页面源代码泄露，攻击者可审查源代码泄露的可用信息进一步渗透。",
+      "vul_modify_repair": "删除源代码文件或对需要的未解析的源代码进行解析。"
+    },
+    {
+      "vul_name": "robots.txt文件泄露",
+      "problem_description": "泄露网站敏感信息，包括网站的后台页面或其它隐私页面。",
+      "vul_modify_repair": "1、robots.txt 文件不应用来保护或隐藏信息。\n2、应该将敏感的文件和目录移到另一个隔离的子目录，以便将这个目录排除在 Web Robot 搜索之外。如下列示例所示，将文件移到“folder”之类的非特定目录名称是比较好的解决方案： New directory structure: /folder/passwords.txt /folder/sensitive_folder/ \nNew robots.txt: User-agent: * Disallow: /folder/ \n3、如果您无法更改目录结构，且必须将特定目录排除于 Web Robot 之外，在 robots.txt 文件中，请只用局部名称。虽然这不是最好的解决方案，但至少它能加大完整目录名称的猜测难度。例如，如果要排除“sensitive_folder”和 “passwords.txt”，请使用下列名称（假设 Web 根目录中没有起始于相同字符的文件或目录）： robots.txt: User-agent: * Disallow: /se Disallow: /pa。\n"
+    },
+    {
+      "vul_name": "敏感信息泄露",
+      "problem_description": "在页面中或者返回的响应包中泄露了敏感信息，通过这些信息，给攻击者渗透提供了非常多的有用信息。",
+      "vul_modify_repair": "1、如果是探针或测试页面等无用的程序建议删除，或者修改成难以猜解的名字。\n2、不影响业务或功能的情况下删除或禁止访问泄露敏感信息页面。\n3、在服务器端对相关敏感信息进行模糊化处理。\n4、对服务器端返回的数据进行严格的检查，满足查询数据与页面显示数据一致。"
+    },
+    {
+      "vul_name": "Github信息泄露漏洞",
+      "problem_description": "开发人员使用Github进行代码管理。而免费用户在Github上的项目内容可在网站中检索到，并对所有用户开放可查看。泄露的敏感信息一般包括：软件源代码、程序账号密码等等。攻击者得到这些信息，可以进行代码审计，更有针对性的找到网站漏洞，甚至可以获得用户账号密码，直接登录获得用户权限。",
+      "vul_modify_repair": "删除敏感的Github项目代码，对可能泄露的帐号密码及时进行修改。"
+    },
+    {
+      "vul_name": "PHP探针信息泄露",
+      "problem_description": "PHP探针文件会导致网站敏感信息泄露",
+      "vul_modify_repair": "删除默认安装PHP探针文件。"
+    },
+    {
+      "vul_name": "phpinfo页面泄露",
+      "problem_description": "泄露网站服务器敏感信息，包括网站物理路径、PHP版本、服务器信息及环境变量等。",
+      "vul_modify_repair": "1、通过修改服务器环境内php.ini文件，将“expose_php = On”修改成“expose_php = Off”然后重启php即可。\n2、如果确实需要该测试信息，在测试时使用，测试完毕后将该文件删除掉。\n3、若无需要可以将一些php的危险函数禁用，打开/etc/php.ini文件，查找到 disable_functions，添加需禁用的以下函数名：phpinfo,eval,passthru,exec,system,chroot,scandir,chgrp,chown,shell_exec,proc_open,proc_get_status,ini_alter,ini_alter,ini_restore,dl,pfsockopen,openlog,syslog,readlink,symlink,popepassthru,stream_socket_server,fsocket,fsockopen"
+    },
+    {
+      "vul_name": "IIS 短文件名泄露漏洞",
+      "problem_description": "攻击者可利用此漏洞枚举网络服务器根目录中的文件。危害：攻击者可以利用 “~” 字符猜解或遍历服务器中的文件名，或对 IIS 服务器中的.Net Framework 进行拒绝服务攻击。也可以通过该漏洞尝试获取网站服务器文件的文件名，达到获取更多信息来入侵服务器的目的。",
+      "vul_modify_repair": "修改 Windows 配置，关闭短文件名功能。\n1、关闭 NTFS 8.3 文件格式的支持。该功能默认是开启的，对于大多数用户来说无需开启。\n2、如果是虚拟主机空间用户，可采用以下修复方案：\n1）修改注册列表 HKLM\\SYSTEM\\CurrentControlSet\\Control\\FileSystem\\NtfsDisable8dot3NameCreation 的值为 1 (此修改只能禁止 NTFS8.3 格式文件名创建，已经存在的文件的短文件名无法移除)。\n2）如果你的 web 环境不需要 asp.net 的支持你可以进入 Internet 信息服务 (IIS) 管理器 --- Web 服务扩展 - ASP.NET 选择禁止此功能。\n3）升级 net framework 至 4.0 以上版本。\n3、将 web 文件夹的内容拷贝到另一个位置，比如 D:\\www 到 D:\\www.back，然后删除原文件夹 D:\\www，再重命名 D:\\www.back 到 D:\\www。如果不重新复制，已经存在的短文件名则是不会消失的。"
+    },
+    {
+      "vul_name": "Go程序内存泄露",
+      "problem_description": "Go 语言虽具备自动垃圾回收（GC）机制，但仍可能因代码设计不当引发内存泄漏，例如全局变量长期持有对象引用、未关闭文件/数据库连接、Goroutine 因阻塞无法退出、循环引用中非托管资源（如文件句柄）滞留，或 CGO 手动分配内存未释放等。此类问题会导致内存占用持续增长，最终触发 OOM（内存耗尽）错误引发服务崩溃，高频 GC 和资源争用也会显著降低性能，在容器化环境中甚至影响宿主机稳定性；攻击者还可构造特定请求利用泄漏发起 DoS 攻击，耗尽系统资源。",
+      "vul_modify_repair": "1、工具检测：利用 pprof 分析内存及 Goroutine 状态，定位泄漏源头。\n2、资源管理：通过 defer 确保文件、连接等资源关闭，context 控制 Goroutine 超时退出。\n3、代码规范：避免全局变量长期引用对象，循环引用中显式释放非托管资源（如文件句柄）。\n4、CGO 安全：手动释放 C 层分配的内存（C.free）。\n5、防御机制：限制 Goroutine 并发量，设置内存阈值（SetMemoryLimit），定期压力测试验证稳定性。"
+    },
+    {
+      "vul_name": "发现隐藏目录",
+      "problem_description": "尝试了检测服务器上的隐藏目录，403 Forbidden 响应泄露了存在此目录，即使不允许对其进行访问，泄露网站目录结构。",
+      "vul_modify_repair": "可对禁止的资源发布“404 - Not Found”响应状态代码，或者将其完全除去。"
+    },
+    {
+      "vul_name": "OpenSSH CBC模式信息泄露漏洞",
+      "problem_description": "配置为CBC模式，OpenSSH没有正确地处理分组密码算法加密的SSH会话中所出现的错误，导致可能泄露密文中任意块最多32位纯文本。",
+      "vul_modify_repair": "临时解决方案：在SSH会话中仅使用CTR模式加密算法，如AES-CTR\n目前厂商已经发布了升级补丁以修复这个安全问题，补丁下载链接： \nhttps://downloads.ssh.com/"
+    },
+    {
+      "vul_name": "未加密的登录请求",
+      "problem_description": "检测中发现登录请求（例如：用户名、密码、电子邮件地址、社会安全号码等）被发送到服务器的过程中并未采用通讯加密协议或加密。恶意人员可通过数据截包实现网站管理员用户名、密码信息的截获。",
+      "vul_modify_repair": "注册或登录时，客户发送请求敏感信息进行加密，例如密码、电话、邮件等敏感信息进行加密传输。"
+    },
+    {
+      "vul_name": "应用程序错误信息泄露",
+      "problem_description": "攻击者可通过特殊的攻击向量，使 web 服务器出现 500、403 等相关错误，导致信息泄漏如绝对路径、webserver 版本、源代码、sql 语句等敏感信息，恶意攻击者很有可能利用这些信息实施进一步的攻击。",
+      "vul_modify_repair": "1、自定义错误页面或使用统一的错误页面提示。"
+    },
+    {
+      "vul_name": "FTP未授权访问（21）",
+      "problem_description": "由于没有对网站敏感页面进行登录状态、访问权限的检查，导致攻击者可未授权访问，获取敏感信息及进行未授权操作。",
+      "vul_modify_repair": "1、页面进行严格的访问权限的控制以及对访问角色进行权限检查。\n2、可以使用 session 对用户的身份进行判断和控制。"
+    },
+    {
+      "vul_name": "FTP未授权访问",
+      "problem_description": "FTP服务开启了匿名登录功能，允许任意用户访问特定目录和文件，这可能导致信息泄露或更严重的安全问题。",
+      "vul_modify_repair": "1、禁用匿名登录账号。\n2、启用密码复杂度策略，确保密码由大小写字母、数字及特殊字符组成，且长度不少于8位。"
+    },
+    {
+      "vul_name": "LDAP未授权访问",
+      "problem_description": "LDAP中文全称为：轻型目录访问协议（Lightweight Directory Access Protocol），默认使用389， LDAP 底层一般使用 TCP 或 UDP 作为传输协议。目录服务是一个特殊的数据库，是一种以树状结构的目录数据库为基础。未对LDAP的访问进行密码验证，导致未授权访问。",
+      "vul_modify_repair": "1、修改LDAP的ACL（访问控制列表），禁止匿名访问。\n2、根据业务设置ldap访问白名单或黑名单；"
+    },
+    {
+      "vul_name": "ZooKeeper未授权访问",
+      "problem_description": "ZooKeeper默认开放2181端口，没有对ZooKeeper进行访问控制，攻击者可通过执行envi命令获得系统大量的敏感信息包括系统名称、Java环境等，任意用户在网络可达的情况下可以进行未授权读取数据甚至杀死服务。",
+      "vul_modify_repair": "1、为ZooKeeper配置相应的访问权限\n2、设置防火墙策略\n3、禁止把ZooKeeper直接暴露在公网"
+    },
+    {
+      "vul_name": " Docker未授权访问",
+      "problem_description": "又称Docker Remote API未授权访问漏洞，此API主要目的是取代命令行界面（赋有远程控制）；Docker swarm是Docker下的分布化应用的本地集群，开放2375端口监听容器时会调用这个API，目的方便Docker集群管理和扩展。它绑定在0.0.0.0上，http会返回404page not found。如果Docker开放tcp端口2375，且没有限制访问，攻击者可以通过这个端口来获取服务器权限。",
+      "vul_modify_repair": "1、关闭2375端口或限制其仅对受信任IP可见，同时启用TLS以加密通信。\n2、定期审查Docker引擎的安全配置，确保采取措施以防范未授权访问"
+    },
+    {
+      "vul_name": "Docker Registry未授权访问",
+      "problem_description": "默认5000端口，docker remote api可以执行docker命令，该接口是目的是取代docker 命令界面，通过url操作docker。",
+      "vul_modify_repair": "1、设置ACL，只允许信任ip连接对应端口\n2、开启TLS，使用生成的证书进行认证"
+    },
+    {
+      "vul_name": "Kibana未授权访问",
+      "problem_description": "Kibana如果允许外网访问，没有做安全的登录认证，也会被外部随意访问查看所有的数据，造成少数据泄露。",
+      "vul_modify_repair": "1、设置kibana监听本地地址，并设置ElasticSearch登录的账号和密码；\n2、设置防火墙策略，限定IP访问服务；"
+    },
+    {
+      "vul_name": "VNC未授权访问",
+      "problem_description": "默认端口为5900、5901.VNC未授权访问可以造成恶意用户直接控制受控主机。",
+      "vul_modify_repair": "1、配置 VNC 客户端登录口令认证并配置符合密码强度要求的密码。\n2、以最小权限的普通用户身份运行操作系统。"
+    },
+    {
+      "vul_name": "Apache Spark未授权访问",
+      "problem_description": "如果管理节点未启动访问控制，攻击者可以在集群中执行任意代码。该漏洞的本质是未授权用户可以向master节点提交一个应用，master节点会分发给slave节点执行应用。如果应用中包含恶意代码，会导致任意代码执行，威胁spark集群整体的安全性。",
+      "vul_modify_repair": "对外关闭敏感端口；\n配置用户权限认证；"
+    },
+    {
+      "vul_name": "CouchDB未授权访问",
+      "problem_description": "HTTP Server默认开启，且没有进行验证，绑定在0.0.0.0上，所有用户均可以通过API访问导致未授权访问。在官方配置文档中对HTTP Server的配置有WWW-Authenticate：Set this option to trigger basic-auth popup on unauthorized requests，但是很多用户都没有这么配置，导致漏洞产生。",
+      "vul_modify_repair": "指定CouchDB绑定的IP：在 /etc/couchdb/local.ini 文件中找到 “bind_address = 0.0.0.0” ，把 0.0.0.0 修改为 127.0.0.1，修改后只有本机才能访问。\n设置访问密码：在 /etc/couchdb/local.ini 中找到“[admins]”字段配置密码。\n设置www-authenticate，强制认证。"
+    },
+    {
+      "vul_name": "Weblogic未授权访问",
+      "problem_description": "允许未授权的用户绕过管理控制台的权限验证访问后台，进入后台后，又允许任意用户通过HTTP协议执行任意命令。",
+      "vul_modify_repair": "1、下载官方补丁进行升级修复\n2、关闭后台/console/console.portal的访问权限\n3、修改后台默认地址"
+    },
+    {
+      "vul_name": " JBOSS未授权访问",
+      "problem_description": "JBOSS未授权漏洞在默认情况下无需账号密码就可以直接访问后台管理控制台页面（http://127.0.0.1:8080/jmx-console），导致攻击者可以获取网站信息、上传webshell，获取服务器权限等。",
+      "vul_modify_repair": "1、需要使用jmx-console和web-console界面请增强认证访问\n2、关闭jmx-console和web-console界面"
+    },
+    {
+      "vul_name": "Jenkins未授权访问",
+      "problem_description": "默认情况下Jenkins面板中用户可以选择执行脚本界面来操作一些系统层命令，攻击者可通过未授权访问漏洞或者暴力破解用户密码等进脚本执行界面从而获取服务器权限。",
+      "vul_modify_repair": "1、对后台控制页面做登录验证限制；\n2、升级Jenkins至新版本；\n3、禁止把Jenkins直接暴露在公网；"
+    },
+    {
+      "vul_name": "Kubernetes API Server未授权",
+      "problem_description": "kubernets服务正常启动后会开放两个端口：Localhost Port（默认8080）、Secure Port（默认6443）。这两个端口都提供了API Server，一个通过web访问（而10250端口是kubelet API的HTTPS端口），一个通过kubectl客户端进行调用。如果没有进行合理的配置验证和权限，那么攻击者可以通过这两个接口去获取容器的权限。",
+      "vul_modify_repair": "1、进行授权认证；\n2、使用Service Account令牌；\n3、设置防火墙策略，限定IP访问服务；"
+    },
+    {
+      "vul_name": "Active MQ未授权访问",
+      "problem_description": "ActiveMQ服务是默认没有配置安全参数的，这导致攻击者可以在默认配置下发动远程命令执行攻击，获取服务器权限，从而导致数据泄露。",
+      "vul_modify_repair": "1、禁止未授权访问：修改conf/jetty.xml文件，bean id为securityConstraint下的authenticate修改值为true\n2、设置强口令：修改conf/jetty.xml文件，bean id 为securityLoginService下的conf值获取用户properties，修改用户名密码"
+    },
+    {
+      "vul_name": "Jupyter Notebook未授权访问",
+      "problem_description": "如果管理员未配置密码，将导致未授权访问漏洞，攻击者可以在其中创建一个console并很仔细任意python代码和命令。",
+      "vul_modify_repair": "1、开启身份验证，防止未经授权用户访问。\n2、访问控制策略，限制IP访问，绑定固定IP。"
+    },
+    {
+      "vul_name": "Elasticsearch未授权访问",
+      "problem_description": "启动服务默认会开放9200端口或9300端口，可被攻击者未授权访问进行非法操作。",
+      "vul_modify_repair": "1、访问控制策略，限制IP访问，绑定固定IP；\n2、在config/elasticsearch.yml中为9200端口设置认证等；"
+    },
+    {
+      "vul_name": "Memcached未授权访问",
+      "problem_description": "由于memcached安全设计缺陷，客户端连接memcached服务器后无需认证就可读取、修改服务器缓存内容。",
+      "vul_modify_repair": "1、配置memcached监听本地回环地址127.0.0.1。\n2、当memcached配置为监听内网IP或公网IP时，使用主机防火墙（iptalbes、firewalld等）和网络防火墙对memcached服务端口进行过滤。"
+    },
+    {
+      "vul_name": "HadoopYARN 未授权访问",
+      "problem_description": "因HadoopYARN资源管理系统配置不当，导致可以未经授权进行访问，从而被攻击者恶意利用。攻击者无需认证即可通过RESTAPI部署任务来执行任意指令，最终完全控制服务器。",
+      "vul_modify_repair": "1、升级Hadoop到x版本以上，并启用Kerberos认证功能，禁止匿名访问;\n2、设置“安全组”访问控制策略，将 Hadoop 默认开放的多个端口对公网全部禁止或限制可信任的 IP 地址才能访问包括 50070 以及 WebUI 等相关端口；\n3、如无必要，关闭 Hadoop Web 管理页面；"
+    },
+    {
+      "vul_name": "Zabbix未授权访问",
+      "problem_description": "如果管理员没有更改默认配置，那么默认开放端口为10051，且无需账号密码即可登录后台。其中web后台是由PHP编写，用来显示数据库中的结果。",
+      "vul_modify_repair": "1、设置Zabbix的复杂口令，禁用Guest登录功能；\n2、zabbix的server和agent都不要以root启动，不要设置AllowRoot=1；\n3、禁止agent执行run，不要设置EnableRemoteCommands=1；"
+    },
+    {
+      "vul_name": "RabbitMQ未授权访问",
+      "problem_description": "在默认配置下，账号密码已知，且默认端口对外开放，攻击者可以未授权访问窃取数据。",
+      "vul_modify_repair": "1、修改为强密码，删除或禁用默认的账号guest；\n2、禁止对外网开放，仅限于内部访问；"
+    },
+    {
+      "vul_name": "Druid未授权访问",
+      "problem_description": "攻击者可以利用该漏洞找到SESSION监控页面下面的一些SESSION信息和URI监控下的路径，以及通过配合目标网站大数据产品平台的登录等一系列测试，可获得一起管理员以及其他注册成员信息。",
+      "vul_modify_repair": "1、添加认证授权\n2、禁用Druid监控页功能"
+    },
+    {
+      "vul_name": "Solr未授权访问",
+      "problem_description": "攻击者利用该漏洞可查询所有数据库信息，甚至可读取系统任意文件，获取shell。",
+      "vul_modify_repair": "1、配置solr访问控制权限；\n2、禁止将solr暴露在公网；"
+    },
+    {
+      "vul_name": "Dubbo未授权访问",
+      "problem_description": "Dubbo是阿里巴巴公司开源的一个高性能优秀的 服务框架，使得应用可通过高性能的 RPC 实现服务的输 出和输入功能，可以和 Spring框架无缝集成。dubbo 因配置不当导致未授权访问漏洞。",
+      "vul_modify_repair": "1、配置dubbo认证；\n2、设置防火墙策略，限定IP访问；"
+    },
+    {
+      "vul_name": "MongoDB未授权访问",
+      "problem_description": "MongoDB数据库安装完成之后默认空口令导致攻击者无需账号就可以直接登录，进行增删改查操作。",
+      "vul_modify_repair": "1、如果mongodb只需在本地使用，建议只在本地开启监听服务\n2、如果mongodb只对内网提供服务，简体禁止将MongoDB服务发布在互联网上，并在主机上通过防火墙限制访问源IP\n3、最大的漏洞成因就是可以无口令进行登录，所以建议启动基于角色的登录认证功能。"
+    },
+    {
+      "vul_name": "Rsync未授权访问",
+      "problem_description": "由于rsync的配置不当，导致允许任何人未授权访问rsync，上传本地文件，下载服务器文件等。",
+      "vul_modify_repair": "更改rsync默认配置文件/etc/rsyncd.conf，添加或修改参数：\n\n1、访问控制；设置host allow，限制允许访问主机的IP。\n2、权限控制；设置read only，将模块设置成只读。\n3、访问认证；设置auth、secrets，认证成功才能调用服务。\n4、模块隐藏；设置list，将模块隐藏。"
+    },
+    {
+      "vul_name": "NFS未授权访问",
+      "problem_description": "NFS配置不当，未限制对外访问，导致共享目录泄露。",
+      "vul_modify_repair": "1、利用iptables限制端口2049和20048端口的访问，禁止外部访问；\n2、设置/etc/exports，对访问进行控"
+    },
+    {
+      "vul_name": "uWSGI 未授权访问漏洞",
+      "problem_description": "uWSGI支持通过魔术变量（Magic Variables）的方式动态配置后端Web应用。如果其端口暴露在外，攻击者可以构造uwsgi数据包，并指定魔术变量UWSGI_FILE，运用exec://协议执行任意命令。",
+      "vul_modify_repair": "1、升级至最新版"
+    },
+    {
+      "vul_name": "Atlassian Crowd 未授权访问",
+      "problem_description": "Atlassian Crowd和Crowd Data Center在其某些发行版本中错误地启用了pdkinstall开发插件，使其存在安全漏洞。攻击者利用该漏洞可在未授权访问的情况下对Atlassian Crowd和Crowd Data Center安装任意的恶意插件，执行任意代码/命令，从而获得服务器权限。",
+      "vul_modify_repair": "1、设置访问/crowd/admin/uploadplugin.action的源ip\n2、升级最新版本"
+    },
+    {
+      "vul_name": " PHP-FPM Fastcgi未授权访问漏洞",
+      "problem_description": "php-fpm配置不当，fastcgi_pass这里配置了0.0.0.0，将fastcgi接口暴露在公网，任何人都可以利用接口对php-fpm发送fastcgi协议数据，更改php.ini配置文件，导致远程代码执行",
+      "vul_modify_repair": "1、禁止直接暴露在公网\n2、配置访问白名单"
+    },
+    {
+      "vul_name": "cisco vpn未授权访问",
+      "problem_description": "Cisco Adaptive Security Appliance (ASA) Software在Clientless SSL VPN入口自定义框架在实现上存在安全漏洞，未经身份验证的远程攻击者可利用此漏洞修改Clientless SSL VPN入口内容，导致窃取凭证、跨站脚本及其他攻击。此漏洞源于没有正确实现Clientless SSL VPN入口自定义框架内的身份验证检查。",
+      "vul_modify_repair": "建议升级思科最新发布的补丁：\nhttp://tools.cisco.com/security/center/content/CiscoSecurityAdvisory/cisco-sa-20141008-asa"
+    },
+    {
+      "vul_name": "WebSphere绕过安全限制漏洞",
+      "problem_description": "在Java端\"%c0%ae\"解析为\"\\uC0AE\"，最后转义为ASCCII低字符\".\"。通过这个方法可以绕过目录保护读取包配置文件信息，包括web-inf和meta-inf目录下的内容。攻击者还可以利用此漏洞查看或执行war包里面的文件。此漏洞影响WebSphere Application Server 版本5.1, 6.0, 6.1 和7.0。",
+      "vul_modify_repair": "升级WebSphere至最新版，或安装PK81387安全补丁。\nhttp://www-01.ibm.com/support/docview.wss?uid=swg24022456"
+    },
+    {
+      "vul_name": "DNS域传送漏洞",
+      "problem_description": "DNS区域传送（DNS zone transfer）指的是一台备用服务器使用来自主服务器的数据刷新自己的域（zone）数据库，一般来说，DNS区域传送操作只在网络里真的有备用域名DNS服务器时才有必要用到，但许多DNS服务器却被错误地配置成只要有client发出请求，就会向对方提供一个zone数据库的详细信息。",
+      "vul_modify_repair": "针对域传送漏洞，建议通过定义ACL(访问控制列表)来限制在域名服务器之间的区域传送，通常可编辑/etc/named.conf中allow-transfer参数。存在漏洞的是ns1.com, 如果其他ns2、ns3、ns4是备用dns服务器，那么应该只允许域传送至其他对应的地址。配置如下：\nallow-transfer { localhost; ns2的IP; ns3的IP; ns4的IP;};"
+    },
+    {
+      "vul_name": "Mongodb数据库未授权访问漏洞",
+      "problem_description": "Mongodb在启动的时候未设置 –auth参数，造成恶意攻击者可使用默认空口令登陆到数据服务器。",
+      "vul_modify_repair": "建议增加数据库用户校验或限制设备登录IP地址，限制未授权访问。"
+    },
+    {
+      "vul_name": "Redis未授权访问",
+      "problem_description": "redis 默认没有口令可能会造成未授权访问造成信息泄露，若 redis 为高权限账户运行，可能导致服务器权限丢失等。",
+      "vul_modify_repair": "1、配置bind选项，限定可以连接Redis服务器的IP，修改 Redis 的默认端口6379\n2、配置认证，也就是AUTH，设置密码，密码会以明文方式保存在Redis配置文件中\n3、配置rename-command 配置项 “RENAME_CONFIG”，这样即使存在未授权访问，也能够给攻击者使用config 指令加大难度\n4、好消息是Redis作者表示将会开发”real user”，区分普通用户和admin权限，普通用户将会被禁止运行某些命令，如config等。"
+    },
+    {
+      "vul_name": "Redis任意文件写入漏洞",
+      "problem_description": "redis为了实现持久化连接，它可将数据保存在本地。这样就能利用 Redis 自身提供的 config 命令像目标主机 写WebShell、写SSH公钥、创建计划任务反弹Shell等",
+      "vul_modify_repair": "1、只对本地127.0.0.1开放，或者添加IP防火墙\n2、禁止使用root运行redis\n3、禁止远程修改 DB 文件地址"
+    },
+    {
+      "vul_name": "SpringBoot Actuator 未授权访问",
+      "problem_description": "在 Actuator 启用的情况下，如果没有做好相关权限控制，非法用户可通过访问默认的执行器端点（endpoints）来获取应用系统中的监控信息，从而导致信息泄露甚至服务器被接管的事件发生。",
+      "vul_modify_repair": "1、Actuator 默认所有的监控点路径都在/actuator/*，当然如果有需要这个路径也支持定制，通过修改配置文件改变端点名避免被扫描发现。\n2、关闭不需要使用的端点并引入security依赖，打开安全限制并进行身份验证。同时设置单独的Actuator管理端口并配置不对外网开放。"
+    },
+    {
+      "vul_name": "SwaggerUI未授权访问",
+      "problem_description": "由于对swagger-ui未做好访问控制措施，导致攻击者可以通过swagger页面获取网站API信息，进而导致攻击者构造payload对系统API进行攻击。",
+      "vul_modify_repair": "1、设置访问权限"
+    },
+    {
+      "vul_name": "Harbor未授权添加管理员漏洞",
+      "problem_description": "Harbor未授权添加任意管理员漏洞。攻击者可通过构造特定的字符串，在未授权的情况下直接创建管理员账号，从而接管Harbor镜像仓库。",
+      "vul_modify_repair": "1、尽快升级到安全版本，下载链接参考：\nhttps://github.com/goharbor/harbor/releases"
+    },
+    {
+      "vul_name": "phpmyadmin未授权访问",
+      "problem_description": "发现phpmyadmin路径，且没有密码保护，可直接登录数据库，获得数据库root权限。",
+      "vul_modify_repair": "设置数据库密码防止未授权访问，修改phpmyadmin默认路径防止被攻击者发现。"
+    },
+    {
+      "vul_name": "弱口令漏洞",
+      "problem_description": "由于网站用户帐号存在弱口令，导致攻击者通过弱口令可轻松登录到网站中，从而进行下一步的攻击，如上传 webshell，获取敏感数据。另外攻击者利用弱口令登录网站管理后台，可执行任意管理员的操作。",
+      "vul_modify_repair": "1、强制用户首次登录时修改默认口令，或是使用用户自定义初始密码的策略；\n2、完善密码策略，信息安全最佳实践的密码策略为 8 位（包括）以上字符，包含数字、大小写字母、特殊字符中的至少 3 种。\n3、增加人机验证机制，限制 ip 访问次数。\n4、用户密码中不要出现与用户名或者系统名相关的字符。\n"
+    },
+    {
+      "vul_name": "数据库弱口令",
+      "problem_description": "数据库弱口令风险严重，攻击者可轻易猜测或破解密码，导致数据泄露、篡改和系统不可用，甚至成为后续攻击的跳板。",
+      "vul_modify_repair": "1、强制用户首次登录时修改默认口令，或是使用用户自定义初始密码的策略；\n2、完善密码策略，信息安全最佳实践的密码策略为 8 位（包括）以上字符，包含数字、大小写字母、特殊字符中的至少 3 种。"
+    },
+    {
+      "vul_name": "RDP弱口令/SSH弱口令",
+      "problem_description": "由于该服务器登录口令的设置强度不高，导致攻击者通过猜解或破解等手段轻松登录该服务器，从而进行下一步的攻击，获取敏感数据，执行任意管理员的操作。",
+      "vul_modify_repair": "1、强制用户首次登录时修改默认口令，或是使用用户自定义初始密码的策略。\n2、完善密码策略，信息安全最佳实践的密码策略为 8 位（包括）以上字符，包含数字、大小写字母、特殊字符中的至少 3 种。"
+    },
+    {
+      "vul_name": "密码复用",
+      "problem_description": "密码复用风险指用户在多个账户或系统中使用相同的密码，一旦其中一个账户受到攻击并密码泄露，攻击者可以利用相同的密码尝试登录到其他账户，增加了账户被入侵和信息泄露的风险。",
+      "vul_modify_repair": "1、使用多种字符组合的强密码，如大小写字母+数字+特殊字符。\n2、用户密码中不要出现与用户名或者系统名相关的字符。\n3、定期更换密码。"
+    },
+    {
+      "vul_name": "Windows ipc共享弱口令/未授权访问漏洞",
+      "problem_description": "攻击者利用Windows系统中的IPC$共享，通过弱口令、未授权访问等方式入侵目标系统。成功入侵后，可获取目标系统的用户列表、查看系统信息、启动和禁用服务等。也可以执行恶意操作：上传木马、修改系统设置、窃取敏感信息等。通常运行在139端口上",
+      "vul_modify_repair": "1、关闭IPC$共享\n2、设置强密码\n3、开启杀软或防火墙。\n"
+    },
+    {
+      "vul_name": "Windows wmi弱口令/未授权访问漏洞",
+      "problem_description": "NetBIOS（Network Basic Input/Output System）是为局域网内计算机之间通信提供的一种API，允许应用程序通过一组简化的命令在不同的计算机之间进行数据传输，通常运行在135端口上。攻击者可以利用这个端口进行木马病毒传播、窃取机密信息等攻击。",
+      "vul_modify_repair": "1、关闭常见端口135、139、445等。\n2、开启杀软或防火墙。"
+    },
+    {
+      "vul_name": "SNMP默认团体名漏洞",
+      "problem_description": "由于很多操作系统或者网络设备的SNMP代理服务存在可读默认口令。如果这些默认口令没有修改或者为弱口令，远程攻击者就可以通过SNMP代理获取系统的很多细节信息。如果攻击者得到了可写口令，它甚至可以修改系统文件或者执行系统命令。",
+      "vul_modify_repair": "针对SNMP信息泄露漏洞，建议修改SNMP缺省口令或者关闭SNMP服务。"
+    },
+    {
+      "vul_name": "会话劫持漏洞",
+      "problem_description": "攻击者通过暴力破解、预测或者窃取（网络嗅探/XSS攻击）等方式获取用户Session ID后，使用该Session ID登录目标账号的攻击方法。",
+      "vul_modify_repair": "1、更改Session名称。PHP中Session的默认名称是PHPSESSID，此变量会保存在Cookie中，如果攻击者不分析站点，就不能猜到Session名称，阻挡部分攻击。\n2、关闭透明化Session ID。透明化Session ID指当浏览器中的Http请求没有使用Cookie来存放Session ID时，Session ID则使用URL来传递。\n3、设置HttpOnly。通过设置Cookie的HttpOnly为true，可以防止客户端脚本访问这个Cookie，从而有效的防止XSS攻击。\n4、关闭所有phpinfo类dump request信息的页面。\n5、使用User-Agent检测请求的一致性。但有专家警告不要依赖于检查User-Agent的一致性。这是因为服务器群集中的HTTP代理服务器会对User-Agent进行编辑，而本群集中的多个代理服务器在编辑该值时可能会不一致。"
+    },
+    {
+      "vul_name": "会话固定漏洞",
+      "problem_description": "会话固定也可以看成是会话劫持的一种类型，原因是会话固定的攻击的主要目的同样是获得目标用户的合法会话，不过会话固定还可以是强迫受害者使用攻击者设定的一个有效会话，以此来获得用户的敏感信息。",
+      "vul_modify_repair": "1、用户登录时生成新的Session ID。如果攻击者使用的会话标识符不是有效的，那么这种方式将会非常有效。如果不是有效的会话标识符，服务器将会要求用户重新登录。如果攻击者使用的是有效的Session ID，那么还可以通过校验的方式来避免攻击。\n2、大部分防止会话劫持的方法对会话固定攻击同样有效。如设置HttpOnly，关闭透明化Session ID，User-Agent验证，Token校验等。"
+    },
+    {
+      "vul_name": "会话cookie中缺少HttpOnly属性",
+      "problem_description": "如不设置此属性，攻击者可配合跨站脚本盗取cookie。设置此属性，即使有跨站漏洞存在，也很难利用。",
+      "vul_modify_repair": "在服务器端设置cookie的HttpOnly属性为真。"
+    },
+    {
+      "vul_name": "未禁用密码表单自动完成属性",
+      "problem_description": "自动填写未对密码字段禁用的 HTML 属性。",
+      "vul_modify_repair": "将“autocomplete”属性正确设置为“off”。"
+    },
+    {
+      "vul_name": "会话cookie中缺少secure属性",
+      "problem_description": "可能会窃取在加密的会话期间发送的用户和会话信息。",
+      "vul_modify_repair": "服务器开启了Https时，cookie的Secure属性应设为true"
+    },
+    {
+      "vul_name": "越权漏洞",
+      "problem_description": "由于没有对用户访问角色的权限进行严格的检查及限制，导致当前账号可对其他账号进行相关操作，如查看、修改等。\n水平越权：攻击者能够执行与自己同级别权限用户的操作\n垂直越权：攻击者能够执行高级别权限用户的操作，比如管理员的相关操作。",
+      "vul_modify_repair": "1、设计严格的权限控制系统，对于每个请求和URL都要进行校验和权限确认，防止非法请求被执行；\n2、默认情况下，应该拒绝执行所有访问权限，也就是说缺省不给用户任何权限，防止攻击者利用缺省权限执行攻击等；\n3、对于每个功能的访问，都要有明确的角色授权，防止黑客利用不完善的访问控制缺陷造成不必要的损失；\n4、或者是实现Web访问的IP白名单列表，只允许属于管理员范围权利的指定IP访问等等。"
+    },
+    {
+      "vul_name": "任意用户密码重置漏洞",
+      "problem_description": "系统在处理重置密码请求时使用本地验证方法，未在服务端处理，造成用户可在本地修改数据包，绕过系统身份验证，达到重置任意账号的目的。",
+      "vul_modify_repair": "针对任意用户密码重置漏洞，建议在服务器端加强逻辑验证。"
+    },
+    {
+      "vul_name": "验证码不失效漏洞",
+      "problem_description": "验证码可以一次多用，导致可以暴力破解；\n验证码没有限定次数和时间，导致可以无限制的发送验证码。",
+      "vul_modify_repair": "1、禁止前端校验或者无效校验。\n2、验证码和用户名、密码需要一次性、同时提交给服务器验证，以此来保持业务一致性。"
+    },
+    {
+      "vul_name": "暴力破解漏洞",
+      "problem_description": "登录入口没有验证码或者验证码可以一次多用，导致可以暴力破解。攻击者可能试图尝试每个可能的字母，数字和符号组合，或使用一些暴力破解工具进行猜测，直到它发现了一个正确的组合，从而进入登录页面做进一步深度非法攻击。",
+      "vul_modify_repair": "1、增加验证码，使之登录失败一次，验证码变换一次。\n2、针对密码猜测，建议控制错误登录次数，以防止暴力破解。同一用户如果5分钟内登录失败6次，禁用此用户登录30分钟。"
+    },
+    {
+      "vul_name": "用户名猜解漏洞",
+      "problem_description": "在应用系统注册的过程中，当输入错误的用户名信息时，应用程序将反馈相应的诸如“用户不存在”的错误提示，攻击者可通过该提示为依据对用户名进行枚举，猜解出已存在于应用系统的用户名信息，最终攻击者再对已有用户的密码进一步猜解，从而降低暴力破解的成本。",
+      "vul_modify_repair": "1、使用模糊的错误登录提示，如：用户名或密码错误。\n2、添加动态验证码增加爆破成本"
+    },
+    {
+      "vul_name": "手机号遍历",
+      "problem_description": "在应用系统注册的过程中，当输入错误的手机号信息时，应用程序将反馈相应的诸如“手机号未注册”的错误提示，攻击者可通过该提示为依据对用户名进行枚举，猜解出已存在于应用系统的用户名信息，最终攻击者再对已有用户的密码进一步猜解，从而降低暴力破解的成本。",
+      "vul_modify_repair": "1、修改为验证验证码后才能发送短信验证"
+    },
+    {
+      "vul_name": "短信轰炸",
+      "problem_description": "短信轰炸是由于系统设计缺陷可无限制发送短信验证码给客户端，攻击者可利用该漏洞对任意手机号码进行短信轰炸，对公司造成不良影响和运行安全风险。",
+      "vul_modify_repair": "1、在服务端限制单位时间内发送短信次数，如对于同一手机号码，同一验证发送次数不超过5-10次，对发送时间间隔做限制\n2、当发送超过一定次数（可以为0），加入验证码验证。"
+    },
+    {
+      "vul_name": "邮件轰炸",
+      "problem_description": "应用系统未限制邮件的发送次数和频率，造成短时间内大量邮件发送至接收者邮箱，造成大量垃圾邮件。",
+      "vul_modify_repair": "1、合理配置后台邮件服务器的功能，对于同一邮箱，同一验证发送次数不超过5-10次，且对发送的时间间隔做限制。\n2、当发送超过一定次数（可以为0），加入验证码验证。"
+    },
+    {
+      "vul_name": "短信定向转发",
+      "problem_description": "短信接收人可任意指定",
+      "vul_modify_repair": "1、发送短信时手机号从当前会话中获取，避免从前端传入\n2、用户的手机号不能随意变动，需要认证过程。"
+    },
+    {
+      "vul_name": "邮件可定向转发",
+      "problem_description": "应用系统发送邮件的接收人可由客户端任意指定",
+      "vul_modify_repair": "1、发送邮件时邮箱从当前会话中获取，避免从前端传入\n2、用户的邮箱不能随意变动，需要认证过程。"
+    },
+    {
+      "vul_name": "任意用户密码修改/重置",
+      "problem_description": "可通过篡改用户名或ID、暴力破解验证码等方式修改/重置任意账户的密码。",
+      "vul_modify_repair": "一次性填写校验信息（原始密码、新密码等）后再提交修改密码请求\n对客户端提交的修改密码请求，应对请求的用户身份与当前登录的用户身份进行校验，判断是否有权修改用户的密码\n使用手机或邮箱进行验证时，要与修改密码的用户一一对应，且验证码仅一次有效，验证之后即失效，避免暴力破解\n对原始密码进行了验证的情况下，限制输入原始密码的错误次数，防止攻击者暴力破解原始密码\n重置密码链接中的关键信息应随机化，不可预测（例如token机制），且禁止将关键信息返回到客户端"
+    },
+    {
+      "vul_name": "负值反冲/正负值对冲",
+      "problem_description": "应用程序未校验订单数据的取值范围，交易存在负值反冲或正负值对冲",
+      "vul_modify_repair": "服务器端在生成交易订单时，商品的价格从数据库中取出，禁止使用客户端发送的商品价格。\n服务器端对客户端提交的交易数据（如商品ID、商品数量、商品价格等）的取值范围进行校验，将商品ID和商品价格与数据库中的数据对比校验，商品数量为大于零的整型数。\n服务器端在生成支付订单时，对支付订单中影响支付金额的所有因素（比如商品ID、商品数量、商品价格、订单编号等）进行签名，对客户端提交的支付订单进行校验。"
+    },
+    {
+      "vul_name": "业务流程跳跃",
+      "problem_description": "业务逻辑流程分步骤进行且能越过中间校验步骤直接进行后续操作，导致中间校验等步骤失效。",
+      "vul_modify_repair": "建议在不影响业务的前提下，在Session中添加对每一步流程页面的校验标志位，在新步骤页面浏览过程前要检测之前每一步的session标志位，且要与用户身份强绑定。"
+    },
+    {
+      "vul_name": "恶意锁定问题",
+      "problem_description": "通过不断的输入错误的密码可恶意锁定任意账号",
+      "vul_modify_repair": "账户锁定之后应不能继续使用认证功能，如对请求IP进行一个限制，一段时间之后才可以继续尝试认证\n认证功能防自动化操作，如添加图形验证码。"
+    },
+    {
+      "vul_name": "Webview远程代码执行漏洞",
+      "problem_description": "WebView组件中的addJavascriptInterface方法用于实现本地Java和JavaScript的交互，但是该函数并没有对方法调用进行限制，导致攻击者可以调用任何JAVA类，最终导致JavaScript代码对设备进行任意攻击",
+      "vul_modify_repair": "建议不使用addJavascriptInterface接口，对于Android API Level为17或者以上的Android系统，Google规定允许被调用的函数，必须在Java的远程方法上面声明一个@JavascriptInterface注解；在使用js2java的bridge时候，需要对每个传入的参数进行验证，避免恶意代码的攻击。"
+    },
+    {
+      "vul_name": "代码动态加载安全检测",
+      "problem_description": "使用DexClassLoader或PathClassLoader动态加载dex文件、apk文件、jar文件时，如果这些文件存储在可被其他应用读写的目录中(比如sdcard)，同时没有对外部加载的文件进行完整性校验，导致应用可能会被恶意代码注入并执行。",
+      "vul_modify_repair": "将所需要动态加载的文件放置在apk内部，或应用私有目录中；如果应用必须要把所加载的文件放置在可被其他应用读写的目录中(比如sdcard)，建议对不可信的加载源进行完整性校验和白名单处理，以保证不被恶意代码注入"
+    },
+    {
+      "vul_name": "应用签名未校验风险",
+      "problem_description": "应用签名未校验，攻击者可伪造app程序。",
+      "vul_modify_repair": "增加程序本地签名校验及云端的签名校验"
+    },
+    {
+      "vul_name": "篡改和二次打包风险",
+      "problem_description": "对移动应用进行破解、再篡改或插入恶意代码，最后重新打包生成一个新应用的过程，恶意程序通过插入广告、木马、病毒的方式窃取用户隐私、吸资扣费、耗费流量等。",
+      "vul_modify_repair": "增加程序本地签名校验及云端的签名校验。"
+    },
+    {
+      "vul_name": "Java代码反编译风险",
+      "problem_description": "可通过反编译工具获取java源代码，攻击者可获取源码信息执行更深入的渗透攻击。",
+      "vul_modify_repair": "1、隔离Java程序；\n2、对Class文件进行加密；\n3、代码混淆。"
+    },
+    {
+      "vul_name": "资源文件泄露风险",
+      "problem_description": "泄露的js文件如果被读取，可能会造成功能逻辑泄露，如果被篡改，可能被植入钓鱼页面或恶意代码，造成用户的敏感信息泄露",
+      "vul_modify_repair": "对资源文件(.js)进行加密保护，防止资源文件泄露。"
+    },
+    {
+      "vul_name": "Webview明文存储密码风险",
+      "problem_description": "在使用WebView的过程中忽略了WebView setSavePassword，当用户选择保存在WebView中输入的用户名和密码，则会被明文保存到应用数据目录的databases/webview.db中。如果手机被root就可以获取明文保存的密码，造成用户的个人敏感数据泄露。",
+      "vul_modify_repair": "使用WebView.getSettings().setSavePassword(false)来禁止保存密码"
+    },
+    {
+      "vul_name": "明文数字证书风险",
+      "problem_description": "明文存储的数字证书如果被篡改，可能会造成客户端与服务端之间的传输数据被截获并解密，造成用户信息泄露",
+      "vul_modify_repair": "对数字证书文件(.cer)进行加密，避免证书文件泄露"
+    },
+    {
+      "vul_name": "应用数据任意备份风险",
+      "problem_description": "Android 2.1 以上的系统可为App提供应用程序数据的备份和恢复功能，该由AndroidMainfest.xml文件中的allowBackup 属性值控制，其默认值为true。当该属性没有显式设置为false时,攻击者可通过adb backup 和adb restore对App的应用数据进行备份和恢复,从而可能获取明文存储的用户敏感信息，如用户的密码、证件号、手机号、交易密码、身份令牌、服务器通信记录等。利用此类信息攻击者可伪造用户身份，盗取用户账户资产，或者直接对服务器发起攻击。",
+      "vul_modify_repair": "关闭应用程序数据的备份和恢复功能。"
+    },
+    {
+      "vul_name": "AES/DES加密方法不安全使用漏洞",
+      "problem_description": "使用AES/DES/DESede加密算法时，如果使用ECB模式，容易受到攻击风险，造成信息泄露",
+      "vul_modify_repair": "使用AES/DES/DESede加密算法时，应显示指定使用CBC或CFB加密模式"
+    },
+    {
+      "vul_name": "敏感函数调用风险",
+      "problem_description": "APP应用程序中调用了包含敏感行为的函数，包括发送短信、发送地理位置、拨打电话等，可能会导致用户隐私数据泄露等风险",
+      "vul_modify_repair": "开发者审核包含敏感行为的函数调用，确保其使用是必要且限制于授权用户的"
+    },
+    {
+      "vul_name": "HTTP传输数据风险",
+      "problem_description": "攻击者在自己设置的钓鱼网络中配置DNS服务器，将软件要连接的服务器域名解析至攻击者的另一台服务器在，这台服务器就可以获得用户登录信息，或者充当客户端与原服务器的中间人，转发双方数据。",
+      "vul_modify_repair": "对敏感数据采用基于SSL/TLS的HTTPS进行传输。"
+    },
+    {
+      "vul_name": "HTTPS未校验服务器证书漏洞",
+      "problem_description": "虽然使用了https通信方式，但是只是简单的调用而已，并未对SSL证书有效性做验证，攻击者以轻易获取手机用户的明文通信信息。",
+      "vul_modify_repair": "对SSL证书进行有效性做验证"
+    },
+    {
+      "vul_name": "Activity组件导出风险",
+      "problem_description": "导出的Activity组件可以被第三方APP任意调用，导致敏感信息泄露，并可能受到绕过认证、恶意代码注入等攻击风险。",
+      "vul_modify_repair": "如果应用的Activity组件不必要导出，或者组件配置了intent filter标签，建议显示设置组件的“android:exported”属性为false；如果组件必须要提供给外部应用使用，建议对组件进行权限控制。"
+    },
+    {
+      "vul_name": "Service组件导出风险",
+      "problem_description": "导出的Service组件可以被第三方APP任意调用，导致敏感信息泄露，并可能受到权限提升、拒绝服务等攻击风险。",
+      "vul_modify_repair": "如果应用的Service组件不必要导出，或者组件配置了intent filter标签，建议显示设置组件的“android:exported”属性为false；如果组件必须要提供给外部应用使用，建议对组件进行权限控制。"
+    },
+    {
+      "vul_name": "Broadcast Receiver组件导出风险",
+      "problem_description": "导出的Broadcast Receiver组件可以被第三方APP任意调用，导致敏感信息泄露，并可能受到权限绕过、拒绝服务等攻击风险",
+      "vul_modify_repair": "如果应用的Broadcast Receiver组件不必要导出，或者组件配置了intent filter标签，建议显示设置组件的“android:exported”属性为false；如果组件必须要接收外部应用发送的消息，建议对组件进行权限控制。"
+    },
+    {
+      "vul_name": "系统组件本地拒绝服务检测",
+      "problem_description": "导出的组件在处理Intent附加数据的时候，没有进行异常捕获，攻击者可通过向应用发送空数据、异常或畸形数据等，导致应用程序崩溃。",
+      "vul_modify_repair": "不必要导出的组件，建议显示设置组件的“android:exported”属性为false；在使用Intent获取附加数据时，使用try catch进行异常捕获和处理，防止抛出异常引发崩溃。"
+    },
+    {
+      "vul_name": "Content Provider组件导出风险",
+      "problem_description": "导出的Content Provider组件可以被第三方app任意调用，导致敏感信息泄露，并可能受到目录遍历、SQL注入等攻击风险",
+      "vul_modify_repair": "如果应用的Content Provider组件不必要导出，建议显式设置组件的“android:exported”属性为false；如果必须要有数据提供给外部应用使用，建议对组件进行权限控制。"
+    },
+    {
+      "vul_name": "网页木马",
+      "problem_description": "经渗透测试发现目标站点存在 webshell，攻击者可直接爆破口令使用木马，非常低成本的进行恶意操作。",
+      "vul_modify_repair": "1、确认并删除木马文件，并进行本地文件漏洞扫描排查是否还存在有其他木马。\n2、发现并及时修复已存在的漏洞。\n3、通过查看日志、服务器杀毒等安全排查，确保服务器未被留下后门"
+    },
+    {
+      "vul_name": "TLS/SSL弱密码套件",
+      "problem_description": "远程主机支持的 ​​TLS/SSL 密码套件具有较弱或不安全的属性。",
+      "vul_modify_repair": "重新配置受影响的应用程序以避免使用弱密码套件"
+    },
+    {
+      "vul_name": "TLS/SSL Sweet32 攻击",
+      "problem_description": "Sweet32 攻击是一种 SSL/TLS 漏洞，允许攻击者使用 64 位分组密码破坏 HTTPS 连接。",
+      "vul_modify_repair": "重新配置受影响的 SSL/TLS 服务器以禁用对过时的 64 位分组密码的支持。"
+    },
+    {
+      "vul_name": "URL 中的会话 ID",
+      "problem_description": "一个或多个页面，查询参数中似乎包含会话令牌。会话令牌属于敏感信息，不应存储在 URL 中。URL 可能会通过 Referer 标头被记录或泄露。",
+      "vul_modify_repair": "应使用 cookie（或隐藏输入字段）来维护会话"
+    },
+    {
+      "vul_name": "敏感页面可能会被缓存",
+      "problem_description": "一个或多个页面可能包含敏感信息（例如密码参数），并且可能会被缓存。即使在安全的 SSL 通道中，中间代理和 SSL 终止器也可能存储敏感数据",
+      "vul_modify_repair": "通过在 HTTP 响应标头中添加“Cache Control: No-store”和“Pragma: no-cache”来防止缓存"
+    },
+    {
+      "vul_name": "\t编程错误消息",
+      "problem_description": "发现一个或多个错误/警告消息。应用程序错误或警告消息可能会向攻击者泄露有关应用程序内部工作的敏感信息。\n这些消息还可能包含产生未处理异常的文件的位置。",
+      "vul_modify_repair": "正确配置应用程序以将错误记录到文件中而不是向用户显示错误。"
+    },
+    {
+      "vul_name": "不安全的框架（外部）",
+      "problem_description": "当网页使用不安全配置的 iframe 嵌入另一个网页时，后者可能会操纵前者，并诱骗其访问者执行不必要的操作。",
+      "vul_modify_repair": "检查 iframe 的用途和环境，并使用沙盒属性保护 iframe，同时应用沙盒指令以在必要时放宽安全限制。"
+    },
+    {
+      "vul_name": "会话 cookie 作用域为父域",
+      "problem_description": "一个或多个会话 cookie 的范围是父域，而不是子域。如果 cookie 的范围是父域，则父域以及父域的任何其他子域都可以访问此 cookie。这可能会导致安全问题。",
+      "vul_modify_repair": "会话 cookie 应该严格限制在子域内"
+    },
+    {
+      "vul_name": "未标记为 HttpOnly 的 Cookie",
+      "problem_description": "一个或多个 Cookie 未设置 HttpOnly 标志。当某个 Cookie 设置了 HttpOnly 标志时，它会指示浏览器该 Cookie 只能由服务器访问，而不能由客户端脚本访问。",
+      "vul_modify_repair": "如果可能的话，应该为这些 cookie 设置 HttpOnly 标志"
+    },
+    {
+      "vul_name": "断链劫持",
+      "problem_description": " Web 应用程序包含从无法解析（可能已过期）的域加载的资源（脚本或框架）。攻击者可能会注册已过期的域并提供恶意 HTML 或 JavaScript 代码（劫持资源）。",
+      "vul_modify_repair": "用指向有效域的新链接替换从未解析域加载的脚本/框架。"
+    },
+    {
+      "vul_name": "HTML 属性注入",
+      "problem_description": "HTML 属性注入是一种在概念上类似于跨站点脚本 (XSS) 的攻击，与 HTML 注入密切相关。当应用程序无法正确处理用户提供的数据时，攻击者可以提供有效的 HTML 代码（通常通过参数值），并注入自己的属性和可能的​​属性值，从而改变页面的行为。这种攻击通常与某种形式的社会工程学结合使用，因为这种攻击利用了基于代码的漏洞和用户的信任。",
+      "vul_modify_repair": "Web 应用程序应该从用户输入中过滤元字符，并在反映用户输入时应用上下文敏感的编码。"
+    },
+    {
+      "vul_name": "通过 HTTPS 传输被动混合内容",
+      "problem_description": " HTTPS 页面中存在通过 HTTP 加载的混合内容。如果 HTTPS 页面包含通过常规明文 HTTP 检索的内容，则连接仅部分加密。未加密的内容可供嗅探器访问。",
+      "vul_modify_repair": "有两种技术可以防御混合内容问题： \n1、HTTP 严格传输安全 (HSTS) 是一种强制安全资源检索的机制，即使用户出现错误（试图通过端口 80 访问您的网站）和实施错误（您的开发人员将不安全的链接放入安全页面）；\n2、内容安全策略 (CSP) 可用于阻止从第三方网站检索不安全的资源。\n3、也可以让用户的浏览器根据用户连接的协议自动选择 HTTP 或 HTTPS。"
+    },
+    {
+      "vul_name": "支持不安全的传输安全协议 (TLS 1.1)",
+      "problem_description": "Web 服务器支持通过 TLS 1.1 进行加密，由于固有的安全问题，该协议已于 2021 年 3 月正式弃用。当旨在满足支付卡行业 (PCI) 数据安全标准 (DSS) 合规性时，建议改用 TLS 1.2 或更高版本。根据 PCI，“2018 年 6 月 30 日是禁用 SSL/早期 TLS 并实施更安全的加密协议（TLS 1.1 或更高版本（强烈建议使用 TLS v1.2））的最后期限，以满足 PCI 数据安全标准 (PCI DSS) 来保护支付数据。攻击者可能利用此问题进行中间人攻击并解密受影响的服务和客户端之间的通信。",
+      "vul_modify_repair": "建议禁用 TLS 1.1 并将其替换为 TLS 1.2 或更高版本"
+    },
+    {
+      "vul_name": "启用 TLS 1.0",
+      "problem_description": "SSL 服务器（端口：443）使用 TLSv1.0 加密流量。攻击者可能能够利用此问题进行中间人攻击并解密受影响的服务和客户端之间的通信。",
+      "vul_modify_repair": "建议禁用 TLS 1.0 并将其替换为 TLS 1.2 或更高版本。"
+    },
+    {
+      "vul_name": "未加密的__VIEWSTATE 参数",
+      "problem_description": "一个或多个页面的 __VIEWSTATE 参数未加密。为了减少有人截取存储在 ViewState 中的信息的机会，对 ViewState 进行加密是一种不错的设计。",
+      "vul_modify_repair": "打开视图状态的加密模式。"
+    },
+    {
+      "vul_name": "SSL/TLS 未实施(未加密的连接)",
+      "problem_description": "目标通过未加密的连接进行连接。潜在攻击者可以拦截和修改从此站点发送和接收的数据。",
+      "vul_modify_repair": "站点应通过安全（HTTPS）连接发送和接收数据"
+    },
+    {
+      "vul_name": "不安全的 HTTP 使用",
+      "problem_description": "Web 应用程序使用 HTTP 协议，但不会自动将用户重定向到 HTTPS。",
+      "vul_modify_repair": "建议将 HTTP 重定向的最佳实践应用到您的 Web 应用程序中"
+    },
+    {
+      "vul_name": "用户凭据以明文形式发送",
+      "problem_description": "用户凭证通过未加密的通道传输。此信息应始终通过加密通道 (HTTPS) 传输，以避免被恶意用户拦截。第三方可能能够通过拦截未加密的 HTTP 连接来读取用户凭据。",
+      "vul_modify_repair": "由于用户凭据被视为敏感信息，因此应始终通过加密连接 (HTTPS) 传输到服务器。"
+    },
+    {
+      "vul_name": "易受攻击的JavaScript库-jQuery",
+      "problem_description": "网站使用一个过时的jQuery库，此版本的库已报告一个或多个漏洞，在jQuery 3.5.0 之前的版本存在DOM-based XSS攻击，涉及CVE漏洞编号CVE-2015-9251、CVE-2020-11022、CVE-2020-11023等。  ",
+      "vul_modify_repair": "1、升级至最新版"
+    },
+    {
+      "vul_name": "易受攻击的JavaScript库-YUI",
+      "problem_description": "网站使用一个过时的YUI库，此版本的库已报告一个或多个漏洞，在YUI 2.5.0 到 2.9.0 版本存在跨站点脚本漏洞等，涉及CVE漏洞编号CVE-2013-4940、CVE-2012-5883、CVE-2012-5882、CVE-2012-5881。",
+      "vul_modify_repair": "1、将受影响的js源项目依赖的yui.js升级至最新版，然后重新编译生成所需要的js文件。以element-ui为例，将对应项目中的lodash.js替换为最新版，然后重新编译新的element-ui.js。"
+    },
+    {
+      "vul_name": "易受攻击的JavaScript库-PDF",
+      "problem_description": "网站使用一个过时的PDF库，此版本的库已报告一个或多个漏洞，在PDF 4.1.392 版本及以前，存在一处 JavaScript 代码注入漏洞。涉及CVE漏洞编号CVE-2024-4367。",
+      "vul_modify_repair": "1、将受影响的js源项目依赖的PDF.js升级至最新版，然后重新编译生成所需要的js文件。以element-ui为例，将对应项目中的lodash.js替换为最新版，然后重新编译新的element-ui.js。"
+    },
+    {
+      "vul_name": "易受攻击的JavaScript库-Lodash",
+      "problem_description": "网站使用一个过时的Lodash库，此版本的库已报告一个或多个漏洞，在Lodash 4.17.21 之前的版本存在命令注入攻击、原型污染等，涉及CVE漏洞编号CVE-2021-23337、CVE-2020-8203、CVE-2020-28500。",
+      "vul_modify_repair": "1、将受影响的js源项目依赖的Lodash.js升级至最新版，然后重新编译生成所需要的js文件。以element-ui为例，将对应项目中的lodash.js替换为最新版，然后重新编译新的element-ui.js。"
+    },
+    {
+      "vul_name": "易受攻击的JavaScript库-highcharts",
+      "problem_description": "在 Highcharts JS 6.1.0 之前的版本中的 js/parts/SvgRenderer.js 中，使用回溯正则表达式允许攻击者对 SVGRenderer 组件发起拒绝服务攻击，又名 ReDoS。",
+      "vul_modify_repair": "1、升级为最新版"
+    },
+    {
+      "vul_name": "Swagger UI DOM XSS 漏洞",
+      "problem_description": "Swagger UI 是一种可视化 API 并与之交互的工具。某些版本的 Swagger UI（介于 3.14.1 和 3.38.0 之间）容易受到基于 DOM 的 XSS 漏洞的攻击，因为它们使用的是过时的库 DOMPurify 版本。",
+      "vul_modify_repair": "1、升级到最新版本的 Swagger UI"
+    },
+    {
+      "vul_name": "ASP.NET版本泄露",
+      "problem_description": "此 Web 应用程序返回的 HTTP 响应包含一个名为X-AspNet-Version 的标头。Visual Studio 使用此标头的值来确定正在使用哪个版本的 ASP.NET。它对于生产站点来说不是必需的，应该禁用。",
+      "vul_modify_repair": "建议隐藏版本信息以减少潜在攻击。"
+    },
+    {
+      "vul_name": "启用ASP.NET调试",
+      "problem_description": "此应用程序启用了 ASP.NET 调试。建议在部署生产应用程序之前禁用调试模式。默认情况下，调试是禁用的，尽管经常启用调试来解决问题，但在问题解决后也经常不会再次禁用它。",
+      "vul_modify_repair": "禁用 ASP.NET 应用程序的调试"
+    },
+    {
+      "vul_name": "点击劫持：X-Frame-Options 标头",
+      "problem_description": "点击劫持（用户界面纠正攻击、UI 纠正攻击、UI 纠正）是一种恶意技术，它诱骗 Web 用户单击与用户感知的内容不同的内容，从而可能泄露机密信息或控制其计算机单击看似无害的网页。\n服务器没有返回值为 DENY 或 SAMEORIGIN 的X-Frame-Options标头，这意味着该网站可能面临点击劫持攻击的风险。X-Frame-Options HTTP 响应标头可用于指示是否允许浏览器在框架或 iframe 内呈现页面。网站可以使用它来避免点击劫持攻击，确保其内容不会嵌入到不受信任的网站中。",
+      "vul_modify_repair": "配置您的 Web 服务器以包含 X-Frame-Options 标头和带有frame-ancestors 指令的 CSP 标头"
+    },
+    {
+      "vul_name": "HTTP 严格传输安全 (HSTS) 错误和警告",
+      "problem_description": "HTTP 严格传输安全 (HSTS) 告诉浏览器只能使用 HTTPS 访问网站。检测到您的 Web 应用程序未实现 HTTP 严格传输安全 (HSTS)，因为响应中缺少严格传输安全标头。",
+      "vul_modify_repair": "建议在您的 Web 应用程序中实施 HTTP 严格传输安全 (HSTS) 的最佳实践"
+    },
+    {
+      "vul_name": "内容安全策略 (CSP) 未实施",
+      "problem_description": "CSP 可用于防止和/或减轻涉及内容/代码注入的攻击，例如跨站点脚本/XSS 攻击、需要嵌入恶意资源的攻击、涉及恶意使用 iframe 的攻击（例如点击劫持攻击）以及其他的。",
+      "vul_modify_repair": "建议在您的 Web 应用程序中实施内容安全策略 (CSP)。配置内容安全策略涉及将Content-Security-Policy HTTP 标头添加到网页并为其指定值以控制允许用户代理为该页面加载的资源。\n参考链接(使用前确认能够访问):\nhttps://developer.mozilla.org/en-US/docs/Web/HTTP/CSP\nhttps://hacks.mozilla.org/2016/02/implementing-content-security-policy/"
+    },
+    {
+      "vul_name": "微软IIS版本泄露",
+      "problem_description": "Web 应用程序返回的 HTTP 响应包含一个名为Server的标头。此标头的值包括 Microsoft IIS 服务器的版本，该信息可用于发起进一步的攻击",
+      "vul_modify_repair": "应配置 Microsoft IIS 以从响应中删除不需要的 HTTP 响应标头。"
+    },
+    {
+      "vul_name": "无HTTP重定向",
+      "problem_description": "攻击者可能能够利用此问题执行中间人攻击并解密受影响服务与客户端之间的通信。",
+      "vul_modify_repair": "在中间件配置文件内修改，将TLS版本修改为TLS1.2或更高"
+    },
+    {
+      "vul_name": "权限策略标头未实现",
+      "problem_description": "Permissions-Policy 标头允许开发人员有选择地启用和禁用各种浏览器功能和 API,可能会造成未授权或逻辑漏洞.",
+      "vul_modify_repair": "参考链接(使用前确认能够访问):\nhttps://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy\nhttps://www.w3.org/TR/permissions-policy-1/"
+    },
+    {
+      "vul_name": "可逆的单向哈希",
+      "problem_description": "因对数据的加密算法不再安全，攻击者通过提供与备用密码相同的目标哈希值，绕过身份验证，从而进行恶意行为。",
+      "vul_modify_repair": "1、删除解密算法代码\n2、及时更新加密算法，使用安全性高的加密算法取代不再被认为是安全的加密算法。"
+    },
+    {
+      "vul_name": "未指定内容类型",
+      "problem_description": "这些页面未设置 Content-Type 标头值。该值告知浏览器期望什么样的数据。如果缺少此标头，浏览器可能会错误地处理数据。这可能会导致安全问题。",
+      "vul_modify_repair": "为这些页面设置 Content-Type 标头值。"
+    },
+    {
+      "vul_name": "开放不安全的多余端口",
+      "problem_description": "Windows 服务用到的端口，如果本身没有这个业务，即为多余端口；",
+      "vul_modify_repair": "关闭多余端口程序或服务"
+    },
+    {
+      "vul_name": "Access-Control-Allow-Origin 标头配置错误",
+      "problem_description": "ORS（跨源资源共享）定义了一种机制，用于启用客户端跨源请求。此应用程序以不安全的方式使用 CORS。Web\n\n应用程序无法正确验证 Origin 标头（有关更多信息，请查看“详细信息”部分）并返回标头Access-Control-Allow-Credentials: true。 在此配置下，任何网站都可以发出使用用户凭据\n\n发出的请求并读取对这些请求的响应。信任任意来源会有效地禁用同源策略，从而允许第三方网站进行双向交互。",
+      "vul_modify_repair": "在 Access-Control-Allow-Origin 标头中仅允许选定的受信任域"
+    },
+    {
+      "vul_name": "带有通配符(*)值的Access-Control-Allow-Origin标头",
+      "problem_description": "跨源资源共享（CORS）是一种机制，允许从资源来源域之外的另一个域请求网页上的受限资源（例如字体）。Access-Control-Allow-Origin 标头根据响应中Origin 请求标头的值“* ”或“null”指示是否可以共享资源。\n如果网站响应 Access-Control-Allow-Origin: *请求的资源允许与每个源共享。因此，任何网站都可以向该网站发出 XHR (XMLHTTPRequest) 请求并访问响应。",
+      "vul_modify_repair": "检查 Access-Control-Allow-Origin: *是否适合资源/响应"
+    },
+    {
+      "vul_name": "内部IP地址泄露",
+      "problem_description": "找到与内部 IPv4 地址匹配的一个或多个字符串。这些 IPv4 地址可能会泄露有关内部网络的 IP 寻址方案的信息。该信息可用于进行进一步的攻击。",
+      "vul_modify_repair": "防止向用户显示此信息。"
+    },
+    {
+      "vul_name": "子资源完整性 (SRI) 未实施",
+      "problem_description": "子资源完整性 (SRI) 是一项安全功能，可让浏览器验证其获取的第三方资源（例如从 CDN 获取）是否在未发生意外操纵的情况下交付。其工作原理是允许开发人员提供所获取文件必须匹配的加密哈希。\n第三方资源（如脚本和样式表）可以被操纵。有权访问或入侵托管 CDN 的攻击者可以操纵或替换文件。SRI 允许开发人员指定要加载的资源的 base64 编码加密哈希。然后将包含哈希的完整性属性添加到 <script> HTML 元素标记中。完整性字符串由 base64 编码的哈希和后跟取决于哈希算法的前缀组成。此前缀可以是 sha256、sha384 或 sha512。",
+      "vul_modify_repair": "使用 SRI 哈希生成器链接生成实现子资源完整性 (SRI) 的 <script> 元素。\n参考链接(使用前确认能够访问):\nhttps://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Integrity"
+    },
+    {
+      "vul_name": "易受攻击的JavaScript库-jQuery.dattatables",
+      "problem_description": "网站使用一个过时的jQuery.dattatables库，此版本的库已报告一个或多个漏洞，在jQuery.dattatables 1.11.3 之前的版本存在原型污染及xss漏洞，涉及CVE漏洞编号CVE-2020-28458、CVE-2021-23445等。  ",
+      "vul_modify_repair": "1、升级至最新版"
+    },
+    {
+      "vul_name": "易受攻击的JavaScript库-jQuery-validation",
+      "problem_description": "网站使用一个过时的jQuery-validation库，此版本的库已报告一个或多个漏洞，在jQuery-validation 1.19.5 之前的版本存在拒绝服务漏洞，涉及CVE漏洞编号CVE-2021-21252、CVE-2021-43306、CVE-2022-31147等。  ",
+      "vul_modify_repair": "1、升级至最新版"
+    },
+    {
+      "vul_name": "易受攻击的JavaScript库-moment",
+      "problem_description": "网站使用一个过时的moment库，此版本的库已报告一个或多个漏洞，在moment 2.29.2 之前的版本存在拒绝服务漏洞，涉及CVE漏洞编号CVE-2017-18214、CVE-2022-24785等。  ",
+      "vul_modify_repair": "1、升级至最新版"
+    },
+    {
+      "vul_name": "易受攻击的JavaScript库-select2",
+      "problem_description": "网站使用一个过时的select2库，此版本的库已报告一个或多个漏洞，在select2 4.0.5 之前的版本存在xss漏洞，涉及CVE漏洞编号CVE-2016-10744等。  ",
+      "vul_modify_repair": "1、升级至最新版"
+    },
+    {
+      "vul_name": "易受攻击的JavaScript库-Bootstrap",
+      "problem_description": "网站使用一个过时的bootstrap库，此版本的库已报告一个或多个漏洞，在select2 4.0.5 之前的版本存在xss漏洞，涉及CVE漏洞编号CVE-2016-10744等。  ",
+      "vul_modify_repair": "1、升级至最新版"
+    },
+    {
+      "vul_name": "页面篡改111",
+      "problem_description": "存在页面篡改111漏洞隐患",
+      "vul_modify_repair": ""
+    }
+  ]
+} 
