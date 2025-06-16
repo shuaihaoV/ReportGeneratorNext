@@ -1,4 +1,5 @@
 use crate::report::RiskReportData;
+use tauri::webview::WebviewWindowBuilder;
 use tauri::Manager;
 use tauri_plugin_dialog::DialogExt;
 
@@ -113,6 +114,27 @@ async fn generate(
     }
 }
 
+#[tauri::command]
+async fn open_icp_query_window(handle: tauri::AppHandle) -> Result<(), String> {
+    let window = handle.get_webview_window("beian");
+    if window.is_some() {
+        window.unwrap().set_focus().map_err(|e| e.to_string())?;
+        tokio::time::sleep(std::time::Duration::from_millis(200)).await;
+        return Ok(());
+    };
+    WebviewWindowBuilder::new(
+        &handle,
+        "beian",
+        tauri::WebviewUrl::External("https://beian.miit.gov.cn/".parse().unwrap()),
+    )
+    .title("备案查询")
+    .inner_size(1200.0, 800.0)
+    .build()
+    .map_err(|e| e.to_string())?;
+    log::info!("打开备案查询窗口成功");
+    Ok(())
+}
+
 /// 清理文件名中的非法字符
 fn sanitize_filename(filename: &str) -> String {
     // 移除或替换文件名中的非法字符
@@ -138,6 +160,7 @@ pub fn run() {
     log::info!("启动应用程序");
 
     tauri::Builder::default()
+        .plugin(tauri_plugin_clipboard::init())
         .plugin(tauri_plugin_window_state::Builder::new().build())
         .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
             log::debug!("检测到单实例，聚焦主窗口");
@@ -150,7 +173,7 @@ pub fn run() {
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_store::Builder::new().build())
         .plugin(tauri_plugin_persisted_scope::init())
-        .invoke_handler(tauri::generate_handler![generate])
+        .invoke_handler(tauri::generate_handler![generate, open_icp_query_window])
         .setup(|_app| {
             log::info!("应用程序设置完成");
             Ok(())

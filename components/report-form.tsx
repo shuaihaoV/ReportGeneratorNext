@@ -3,9 +3,10 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { open as openFileDialog } from '@tauri-apps/plugin-dialog';
 import { readFile } from '@tauri-apps/plugin-fs';
-import { X, Image as ImageIcon, Type, Eye } from 'lucide-react';
+import { X, Image as ImageIcon, Type, Eye, Clipboard, PictureInPicture2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
+import { invoke } from '@tauri-apps/api/core';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -24,6 +25,7 @@ import { hazardLevels } from '@/lib/config';
 import { useSettings } from '@/hooks/useSettings';
 import { useVulnDB } from '@/hooks/useVulnDB';
 import { useReport } from '@/contexts/ReportContext';
+import clipboard from "tauri-plugin-clipboard-api";
 
 interface ReportFormProps {
   report?: RiskReportData;
@@ -45,7 +47,7 @@ const generateReportId = (): string => {
   const day = String(now.getDate()).padStart(2, '0');
   // 生成6位随机数字
   const randomNum = Math.floor(Math.random() * 1000000).toString().padStart(6, '0');
-  
+
   return `HN-${year}-${month}-${day}-${randomNum}`;
 };
 
@@ -53,7 +55,7 @@ export function ReportForm({ report, onSave, onCancel }: ReportFormProps) {
   const { settings, addHazardType, addIndustry, addUnitType } = useSettings();
   const { addVulnData, getVulnData, getVulnNames } = useVulnDB();
   const { isLoading: isReportLoading } = useReport();
-  
+
   // 使用useMemo优化默认数据
   const defaultData = useMemo(() => ({
     id: '', // 新建时为空，由Context生成
@@ -111,11 +113,11 @@ export function ReportForm({ report, onSave, onCancel }: ReportFormProps) {
   const handleInputChange = useCallback((field: keyof RiskReportData, value: string) => {
     setFormData(prev => {
       const newData = { ...prev, [field]: value };
-      
+
       // 当修改漏洞名称时，自动更新隐患名称
       if (field === 'vul_name' && value.trim()) {
         newData.report_name = `存在${value.trim()}漏洞隐患`;
-        
+
         // 如果选择的是预定义的漏洞类型，自动填充问题描述和修复建议
         const vulnInfo = getVulnData(value.trim());
         if (vulnInfo) {
@@ -123,7 +125,7 @@ export function ReportForm({ report, onSave, onCancel }: ReportFormProps) {
           newData.vul_modify_repair = vulnInfo.vul_modify_repair;
         }
       }
-      
+
       return newData;
     });
   }, [getVulnData]);
@@ -131,55 +133,55 @@ export function ReportForm({ report, onSave, onCancel }: ReportFormProps) {
   // 文件验证函数
   const validateFile = useCallback((filePath: string, fileSize?: number): boolean => {
     const extension = filePath.split('.').pop()?.toLowerCase();
-    
+
     if (!extension || !SUPPORTED_IMAGE_TYPES.includes(extension)) {
       toast.error(`不支持的文件格式。支持的格式：${SUPPORTED_IMAGE_TYPES.join(', ')}`);
       return false;
     }
-    
+
     if (fileSize && fileSize > MAX_FILE_SIZE) {
       toast.error(`文件大小超过限制。最大允许大小：${Math.round(MAX_FILE_SIZE / 1024 / 1024)}MB`);
       return false;
     }
-    
+
     return true;
   }, []);
 
   const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (isSubmitting || isReportLoading) return;
-    
+
     // 只验证隐患编号为必填项
     if (!formData.report_id.trim()) {
       toast.error('请填写隐患编号');
       return;
     }
-    
+
     setIsSubmitting(true);
-    
+
     try {
       // 如果有新的设置项，保存到store中
       const promises = [];
-      
+
       if (formData.hazard_type && !settings.hazardTypes.includes(formData.hazard_type)) {
         promises.push(addHazardType(formData.hazard_type));
       }
-      
+
       if (formData.industry && !settings.industries.includes(formData.industry)) {
         promises.push(addIndustry(formData.industry));
       }
-      
+
       if (formData.unit_type && !settings.unitTypes.includes(formData.unit_type)) {
         promises.push(addUnitType(formData.unit_type));
       }
-      
+
       // 如果有新的漏洞信息，保存到漏洞数据库中
       if (formData.vul_name && formData.problem_description && formData.vul_modify_repair) {
         const existingVuln = getVulnData(formData.vul_name);
-        if (!existingVuln || 
-            existingVuln.problem_description !== formData.problem_description ||
-            existingVuln.vul_modify_repair !== formData.vul_modify_repair) {
+        if (!existingVuln ||
+          existingVuln.problem_description !== formData.problem_description ||
+          existingVuln.vul_modify_repair !== formData.vul_modify_repair) {
           promises.push(addVulnData({
             vul_name: formData.vul_name,
             problem_description: formData.problem_description,
@@ -187,7 +189,7 @@ export function ReportForm({ report, onSave, onCancel }: ReportFormProps) {
           }));
         }
       }
-      
+
       await Promise.all(promises);
       onSave(formData);
     } catch (error) {
@@ -218,23 +220,23 @@ export function ReportForm({ report, onSave, onCancel }: ReportFormProps) {
         }
 
         const fileData = await readFile(file as string);
-        
+
         // 验证文件大小
         if (fileData.length > MAX_FILE_SIZE) {
           toast.error(`文件大小超过限制。最大允许大小：${Math.round(MAX_FILE_SIZE / 1024 / 1024)}MB`);
           return;
         }
-        
+
         const newScreenshot: ScreenshotContent = {
           type: 'image',
           content: fileData
         };
-        
+
         setFormData(prev => ({
           ...prev,
           [type]: [...prev[type], newScreenshot]
         }));
-        
+
         toast.success('图片添加成功');
       }
     } catch (error) {
@@ -242,6 +244,37 @@ export function ReportForm({ report, onSave, onCancel }: ReportFormProps) {
       toast.error('添加图片失败，请重试');
     }
   }, [validateFile]);
+
+  const handlePasteImage = useCallback(async (type: 'evidence_screenshots' | 'filing_screenshots') => {
+    try {
+      const fileData = await clipboard.readImageBinary("Uint8Array") as Uint8Array;
+
+      if (fileData && fileData.length > 0) {
+        // 验证文件大小
+        if (fileData.length > MAX_FILE_SIZE) {
+          toast.error(`文件大小超过限制。最大允许大小：${Math.round(MAX_FILE_SIZE / 1024 / 1024)}MB`);
+          return;
+        }
+
+        const newScreenshot: ScreenshotContent = {
+          type: 'image',
+          content: fileData
+        };
+
+        setFormData(prev => ({
+          ...prev,
+          [type]: [...prev[type], newScreenshot]
+        }));
+
+        toast.success('图片粘贴成功');
+      } else {
+        toast.error('剪贴板中没有图片数据');
+      }
+    } catch (error) {
+      console.error('Failed to paste image:', error);
+      toast.error('粘贴图片失败，请确保剪贴板中有图片');
+    }
+  }, []);
 
   const handleAddText = useCallback((type: 'evidence_screenshots' | 'filing_screenshots') => {
     setTextDialog({
@@ -257,15 +290,15 @@ export function ReportForm({ report, onSave, onCancel }: ReportFormProps) {
         type: 'text',
         content: textDialog.value.trim()
       };
-      
+
       setFormData(prev => ({
         ...prev,
         [textDialog.type]: [...prev[textDialog.type], newScreenshot]
       }));
-      
+
       toast.success('文本添加成功');
     }
-    
+
     setTextDialog({
       open: false,
       type: 'evidence_screenshots',
@@ -291,10 +324,6 @@ export function ReportForm({ report, onSave, onCancel }: ReportFormProps) {
   // 图片预览功能
   const handlePreviewImage = useCallback((content: Uint8Array, title: string) => {
     try {
-      // 将Uint8Array转换为base64 data URL
-      const bytes = Array.from(content);
-      const base64 = btoa(String.fromCharCode(...bytes));
-      
       // 检测图片格式
       let mimeType = 'image/png'; // 默认
       if (content.length > 8) {
@@ -319,9 +348,24 @@ export function ReportForm({ report, onSave, onCancel }: ReportFormProps) {
           mimeType = 'image/bmp';
         }
       }
-      
-      const dataUrl = `data:${mimeType};base64,${base64}`;
-      setPreviewImage({ open: true, src: dataUrl, title });
+
+      // 使用 Blob 和 FileReader 来生成 Data URL，避免 "Maximum call stack size exceeded" 错误
+      const blob = new Blob([new Uint8Array(content)], { type: mimeType });
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const dataUrl = e.target?.result as string;
+        if (dataUrl) {
+          setPreviewImage({ open: true, src: dataUrl, title });
+        } else {
+          toast.error('预览图片失败：无法读取图片数据');
+        }
+      };
+      reader.onerror = (error) => {
+        console.error('Failed to preview image with FileReader:', error);
+        toast.error('预览图片失败');
+      };
+      reader.readAsDataURL(blob);
+
     } catch (error) {
       console.error('Failed to preview image:', error);
       toast.error('预览图片失败');
@@ -332,23 +376,35 @@ export function ReportForm({ report, onSave, onCancel }: ReportFormProps) {
     setPreviewImage({ open: false, src: '', title: '' });
   }, []);
 
+  // 处理备案查询窗口
+  const openICPWindow = useCallback(async () => {
+    try {
+      await invoke("open_icp_query_window");
+      toast.success('备案查询窗口已打开');
+    } catch (e) {
+      console.error('Failed to open icp query window:', e);
+      toast.error('打开备案查询窗口失败');
+    }
+  }, []);
+
   const renderScreenshots = useCallback((type: 'evidence_screenshots' | 'filing_screenshots', title: string) => {
     const screenshots = formData[type];
-    
+
     return (
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <Label className="text-base font-medium">{title}</Label>
           <div className="flex gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => handleAddImage(type)}
-            >
-              <ImageIcon className="h-4 w-4 mr-1" />
-              添加图片
-            </Button>
+            {type === "filing_screenshots" &&
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={openICPWindow}
+              >
+                <PictureInPicture2 className="h-4 w-4 mr-1" />
+                备案查询窗口
+              </Button>}
             <Button
               type="button"
               variant="outline"
@@ -358,9 +414,28 @@ export function ReportForm({ report, onSave, onCancel }: ReportFormProps) {
               <Type className="h-4 w-4 mr-1" />
               添加文本
             </Button>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => handleAddImage(type)}
+            >
+              <ImageIcon className="h-4 w-4 mr-1" />
+              上传图片
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => handlePasteImage(type)}
+            >
+              <Clipboard className="h-4 w-4 mr-1" />
+              粘贴图片
+            </Button>
+
           </div>
         </div>
-        
+
         {screenshots.length > 0 && (
           <div className="space-y-2">
             {screenshots.map((screenshot, index) => (
@@ -372,9 +447,9 @@ export function ReportForm({ report, onSave, onCancel }: ReportFormProps) {
                     <Type className="h-4 w-4 text-green-500" />
                   )}
                   <span className="text-sm">
-                    {screenshot.type === 'image' 
-                      ? `图片 ${index + 1} (${Math.round(screenshot.content.length / 1024)}KB)` 
-                      : screenshot.content.length > 50 
+                    {screenshot.type === 'image'
+                      ? `图片 ${index + 1} (${Math.round(screenshot.content.length / 1024)}KB)`
+                      : screenshot.content.length > 50
                         ? `${screenshot.content.substring(0, 50)}...`
                         : screenshot.content
                     }
@@ -406,7 +481,7 @@ export function ReportForm({ report, onSave, onCancel }: ReportFormProps) {
         )}
       </div>
     );
-  }, [formData, handleAddImage, handleAddText, removeScreenshot, handlePreviewImage]);
+  }, [formData, openICPWindow, handleAddText, handleAddImage, handlePasteImage, handlePreviewImage, removeScreenshot]);
 
   return (
     <>
@@ -425,7 +500,7 @@ export function ReportForm({ report, onSave, onCancel }: ReportFormProps) {
           {/* 基本信息 */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">基本信息</h3>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="report_id">隐患编号 <span className="text-red-500">*</span></Label>
@@ -524,7 +599,7 @@ export function ReportForm({ report, onSave, onCancel }: ReportFormProps) {
           {/* 公司信息 */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">公司信息</h3>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="customer_company_name">单位名称</Label>
@@ -535,7 +610,7 @@ export function ReportForm({ report, onSave, onCancel }: ReportFormProps) {
                   disabled={isSubmitting}
                 />
               </div>
-              
+
               <div>
                 <Label htmlFor="unit_type">单位类型</Label>
                 <CreatableCombobox
@@ -558,7 +633,7 @@ export function ReportForm({ report, onSave, onCancel }: ReportFormProps) {
                   disabled={isSubmitting}
                 />
               </div>
-              
+
               <div>
                 <Label htmlFor="industry">所属行业</Label>
                 <CreatableCombobox
@@ -579,7 +654,7 @@ export function ReportForm({ report, onSave, onCancel }: ReportFormProps) {
           {/* 技术信息 */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">技术信息</h3>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="website_name">网站名称</Label>
@@ -590,7 +665,7 @@ export function ReportForm({ report, onSave, onCancel }: ReportFormProps) {
                   disabled={isSubmitting}
                 />
               </div>
-              
+
               <div>
                 <Label htmlFor="domain">网站域名</Label>
                 <Input
@@ -600,7 +675,7 @@ export function ReportForm({ report, onSave, onCancel }: ReportFormProps) {
                   disabled={isSubmitting}
                 />
               </div>
-              
+
               <div>
                 <Label htmlFor="ip_address">网站IP</Label>
                 <Input
@@ -627,7 +702,7 @@ export function ReportForm({ report, onSave, onCancel }: ReportFormProps) {
           {/* 详细描述 */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold">详细描述</h3>
-            
+
             <div>
               <Label htmlFor="problem_description">问题描述</Label>
               <textarea
@@ -638,7 +713,7 @@ export function ReportForm({ report, onSave, onCancel }: ReportFormProps) {
                 disabled={isSubmitting}
               />
             </div>
-            
+
             <div>
               <Label htmlFor="vul_modify_repair">整改建议</Label>
               <textarea
@@ -649,8 +724,8 @@ export function ReportForm({ report, onSave, onCancel }: ReportFormProps) {
                 disabled={isSubmitting}
               />
             </div>
-            
-            <div> 
+
+            <div>
               <Label htmlFor="remark">备注</Label>
               <textarea
                 id="remark"
@@ -731,7 +806,7 @@ export function ReportForm({ report, onSave, onCancel }: ReportFormProps) {
             {previewImage.src && (
               // eslint-disable-next-line @next/next/no-img-element
               <img
-                src={previewImage.src} 
+                src={previewImage.src}
                 alt={previewImage.title}
                 className="max-w-full max-h-[70vh] object-contain"
               />
