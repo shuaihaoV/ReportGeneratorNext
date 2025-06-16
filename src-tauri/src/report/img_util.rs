@@ -44,7 +44,7 @@ impl ImageFormat {
         // WebP: 52 49 46 46 ... 57 45 42 50 (RIFF...WEBP)
         if data.len() >= 12
             && data.starts_with(&[0x52, 0x49, 0x46, 0x46])
-            && &data[8..12] == [0x57, 0x45, 0x42, 0x50]
+            && data[8..12] == [0x57, 0x45, 0x42, 0x50]
         {
             return Some(ImageFormat::Webp);
         }
@@ -141,7 +141,7 @@ fn find_png_ihdr(data: &[u8]) -> Option<usize> {
 
 /// 获取JPEG图片尺寸
 fn get_jpeg_dimensions(data: &[u8]) -> Result<(u32, u32), ImageError> {
-    if data.len() < 4 || &data[0..2] != [0xFF, 0xD8] {
+    if data.len() < 4 || data[0..2] != [0xFF, 0xD8] {
         return Err(ImageError::UnsupportedFormat);
     }
 
@@ -328,16 +328,41 @@ mod tests {
             Some(ImageFormat::Png)
         ));
 
-        // JPEG signature
-        let jpeg_data = [0xFF, 0xD8, 0xFF, 0xE0];
+        // JPEG signature (需要至少8字节)
+        let jpeg_data = [0xFF, 0xD8, 0xFF, 0xE0, 0x00, 0x10, 0x4A, 0x46];
         assert!(matches!(
             ImageFormat::from_signature(&jpeg_data),
             Some(ImageFormat::Jpeg)
         ));
 
-        // Invalid data
+        // GIF signature
+        let gif_data = [0x47, 0x49, 0x46, 0x38, 0x39, 0x61, 0x00, 0x00];
+        assert!(matches!(
+            ImageFormat::from_signature(&gif_data),
+            Some(ImageFormat::Gif)
+        ));
+
+        // WebP signature
+        let webp_data = [0x52, 0x49, 0x46, 0x46, 0x28, 0x00, 0x00, 0x00, 0x57, 0x45, 0x42, 0x50];
+        assert!(matches!(
+            ImageFormat::from_signature(&webp_data),
+            Some(ImageFormat::Webp)
+        ));
+
+        // BMP signature
+        let bmp_data = [0x42, 0x4D, 0x36, 0x00, 0x00, 0x00, 0x00, 0x00];
+        assert!(matches!(
+            ImageFormat::from_signature(&bmp_data),
+            Some(ImageFormat::Bmp)
+        ));
+
+        // Invalid data (less than 8 bytes)
         let invalid_data = [0x00, 0x00, 0x00, 0x00];
         assert!(ImageFormat::from_signature(&invalid_data).is_none());
+
+        // Invalid data (8 bytes but unknown format)
+        let unknown_data = [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00];
+        assert!(ImageFormat::from_signature(&unknown_data).is_none());
     }
 
     #[test]

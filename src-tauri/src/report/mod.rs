@@ -41,9 +41,9 @@ pub struct RiskReportData {
 /// 文档内容项，可以是标题或表格
 #[derive(Debug, Clone)]
 pub enum DocumentItem {
-    Title(String),                          // 标题文本
-    RiskTable(RiskReportData, Option<f32>), // 风险隐患表格 (数据, 可选行高)
-    PageBreak,                              // 分页符
+    Title(String),                              // 标题文本
+    RiskTable(Box<RiskReportData>, Option<f32>), // 风险隐患表格 (数据, 可选行高)
+    PageBreak,                                  // 分页符
 }
 
 /// 风险隐患表格构建器
@@ -352,6 +352,12 @@ pub struct DocxBuilder {
     title_font_size: usize,
 }
 
+impl Default for DocxBuilder {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl DocxBuilder {
     /// 创建新的文档构建器
     pub fn new() -> Self {
@@ -375,14 +381,14 @@ impl DocxBuilder {
 
     /// 添加风险隐患表格
     pub fn add_risk_table(mut self, data: RiskReportData) -> Self {
-        self.items.push(DocumentItem::RiskTable(data, None));
+        self.items.push(DocumentItem::RiskTable(Box::new(data), None));
         self
     }
 
     /// 添加带自定义行高的风险隐患表格
     pub fn add_risk_table_with_height(mut self, data: RiskReportData, row_height: f32) -> Self {
         self.items
-            .push(DocumentItem::RiskTable(data, Some(row_height)));
+            .push(DocumentItem::RiskTable(Box::new(data), Some(row_height)));
         self
     }
 
@@ -420,7 +426,7 @@ impl DocxBuilder {
                 }
                 DocumentItem::RiskTable(data, row_height) => {
                     // 创建表格，如果有自定义行高则使用，否则使用默认值
-                    let mut table_builder = RiskTableBuilder::new(data.clone());
+                    let mut table_builder = RiskTableBuilder::new((**data).clone());
                     if let Some(height) = row_height {
                         table_builder = table_builder.with_base_row_height(*height);
                     }
