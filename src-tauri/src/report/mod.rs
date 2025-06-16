@@ -41,9 +41,9 @@ pub struct RiskReportData {
 /// 文档内容项，可以是标题或表格
 #[derive(Debug, Clone)]
 pub enum DocumentItem {
-    Title(String),                              // 标题文本
+    Title(String),                               // 标题文本
     RiskTable(Box<RiskReportData>, Option<f32>), // 风险隐患表格 (数据, 可选行高)
-    PageBreak,                                  // 分页符
+    PageBreak,                                   // 分页符
 }
 
 /// 风险隐患表格构建器
@@ -381,7 +381,8 @@ impl DocxBuilder {
 
     /// 添加风险隐患表格
     pub fn add_risk_table(mut self, data: RiskReportData) -> Self {
-        self.items.push(DocumentItem::RiskTable(Box::new(data), None));
+        self.items
+            .push(DocumentItem::RiskTable(Box::new(data), None));
         self
     }
 
