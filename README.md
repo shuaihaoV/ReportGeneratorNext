@@ -1,9 +1,9 @@
 # 风险隐患报告生成器
 
-![构建状态](https://github.com/shuaihaoV/report-generator-next/workflows/release/badge.svg)
-![CI状态](https://github.com/shuaihaoV/report-generator-next/workflows/ci/badge.svg)
-![License](https://img.shields.io/github/license/shuaihaoV/report-generator-next)
-![Release](https://img.shields.io/github/v/release/shuaihaoV/report-generator-next)
+![构建状态](https://github.com/shuaihaoV/ReportGeneratorNext/workflows/release/badge.svg)
+![CI状态](https://github.com/shuaihaoV/ReportGeneratorNext/workflows/ci/badge.svg)
+![License](https://img.shields.io/github/license/shuaihaoV/ReportGeneratorNext)
+![Release](https://img.shields.io/github/v/release/shuaihaoV/ReportGeneratorNext)
 
 一个基于 Tauri + Next.js 构建的现代化风险隐患报告管理与生成应用，专为网络安全评估、系统安全审计等场景设计。
 
@@ -74,8 +74,8 @@
 
 2. **克隆项目**
    ```bash
-   git clone https://github.com/shuaihaoV/report-generator-next.git
-   cd report-generator-next
+   git clone https://github.com/shuaihaoV/ReportGeneratorNext.git
+   cd ReportGeneratorNext
    ```
 
 3. **安装项目依赖**
@@ -139,7 +139,7 @@ cargo tauri build
 
 如果您在使用过程中遇到问题，请通过以下方式反馈：
 
-- **GitHub Issues**: [提交问题](https://github.com/shuaihaoV/report-generator-next/issues)
+- **GitHub Issues**: [提交问题](https://github.com/shuaihaoV/ReportGeneratorNext/issues)
 - **功能建议**: 欢迎提出新功能建议
 - **Bug 报告**: 请提供详细的复现步骤
 
