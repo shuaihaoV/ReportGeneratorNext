@@ -1,7 +1,7 @@
 # 风险隐患报告生成器
 
-![构建状态](https://github.com/shuaihaoV/report-generator-next/workflows/构建发布/badge.svg)
-![CI状态](https://github.com/shuaihaoV/report-generator-next/workflows/持续集成/badge.svg)
+![构建状态](https://github.com/shuaihaoV/report-generator-next/workflows/release/badge.svg)
+![CI状态](https://github.com/shuaihaoV/report-generator-next/workflows/ci/badge.svg)
 ![License](https://img.shields.io/github/license/shuaihaoV/report-generator-next)
 ![Release](https://img.shields.io/github/v/release/shuaihaoV/report-generator-next)
 
