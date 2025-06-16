@@ -166,7 +166,7 @@ export function AppSettings() {
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
               <span className="font-medium">应用版本:</span>
-              <span className="ml-2 text-muted-foreground">v0.1.0</span>
+              <span className="ml-2 text-muted-foreground">v0.2.0</span>
             </div>
             <div>
               <span className="font-medium">构建日期:</span>
