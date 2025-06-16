@@ -1,0 +1,53 @@
+name: 持续集成
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  test:
+    runs-on: ubuntu-22.04
+    
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 安装 Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+
+      - name: 安装 Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: 安装 Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: 安装依赖 (Ubuntu)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.0-dev libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+
+      - name: 安装前端依赖
+        run: bun install
+
+      - name: 代码格式检查
+        run: bun run lint
+
+      - name: TypeScript 类型检查
+        run: bunx tsc --noEmit
+
+      - name: 构建前端
+        run: bun run build
+
+      - name: Rust 代码检查
+        working-directory: src-tauri
+        run: |
+          cargo fmt --check
+          cargo clippy -- -D warnings
+
+      - name: Rust 测试
+        working-directory: src-tauri
+        run: cargo test 

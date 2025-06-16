@@ -1,5 +1,10 @@
 # 风险隐患报告生成器
 
+![构建状态](https://github.com/shuaihaoV/report-generator-next/workflows/构建发布/badge.svg)
+![CI状态](https://github.com/shuaihaoV/report-generator-next/workflows/持续集成/badge.svg)
+![License](https://img.shields.io/github/license/shuaihaoV/report-generator-next)
+![Release](https://img.shields.io/github/v/release/shuaihaoV/report-generator-next)
+
 一个基于 Tauri + Next.js 构建的现代化风险隐患报告管理与生成应用，专为网络安全评估、系统安全审计等场景设计。
 
 ## 📖 项目简介
